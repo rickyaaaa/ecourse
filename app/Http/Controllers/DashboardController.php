@@ -6,6 +6,7 @@ use App\Models\Course;
 use App\Models\LessonProgress;
 use App\Models\User;
 use App\Support\CoursePresentation;
+use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
@@ -30,14 +31,22 @@ class DashboardController extends Controller
     }
 
     /**
-     * API data kursus yang sedang diikuti pengguna (dengan progres asli),
-     * dipakai konsumen lain di luar halaman dasbor kalau dibutuhkan.
+     * Daftar lengkap kursus yang sedang diikuti pengguna (dengan progres
+     * asli). Dibuka lewat browser (mis. klik "Kursus Saya" di menu) akan
+     * menampilkan halaman HTML; dipanggil lewat fetch dengan header
+     * Accept: application/json (dipakai komponen lain kalau perlu) akan
+     * mengembalikan JSON seperti sebelumnya — jadi konsumen lama tidak
+     * terpengaruh.
      */
-    public function enrolledCourses(Request $request): JsonResponse
+    public function enrolledCourses(Request $request): JsonResponse|View
     {
-        return response()->json([
-            'courses' => $this->enrolledCoursesFor($request->user())->values(),
-        ]);
+        $courses = $this->enrolledCoursesFor($request->user());
+
+        if ($request->wantsJson()) {
+            return response()->json(['courses' => $courses->values()]);
+        }
+
+        return view('dashboard.enrolled-courses', ['enrolledCourses' => $courses]);
     }
 
     /**

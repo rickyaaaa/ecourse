@@ -1,6 +1,15 @@
+@props(['limit' => null])
+
 <div
     {{ $attributes }}
-    x-data="{ history: [], loading: true }"
+    x-data="{
+        history: [],
+        loading: true,
+        limit: {{ $limit ?? 'null' }},
+        get visible() {
+            return this.limit ? this.history.slice(0, this.limit) : this.history;
+        },
+    }"
     x-init="
         fetch('{{ route('quizzes.history') }}', { headers: { Accept: 'application/json' } })
             .then((response) => response.json())
@@ -8,49 +17,42 @@
             .finally(() => { loading = false; });
     "
 >
-    <div x-show="loading" class="rounded-lg border border-dashed border-gray-300 p-8 text-center text-gray-500 sm:p-10">
+    <div x-show="loading" class="text-center text-body p-4 border border-dashed rounded-4">
         Memuat riwayat nilai…
     </div>
 
-    <div
-        x-show="!loading && history.length === 0"
-        x-cloak
-        class="rounded-lg border border-dashed border-gray-300 p-8 text-center text-gray-500 sm:p-10"
-    >
+    <div x-show="!loading && history.length === 0" x-cloak class="text-center text-body p-4 border border-dashed rounded-4">
         Kamu belum mengerjakan kuis apa pun. Yuk mulai belajar dan coba kuisnya!
     </div>
 
-    <div x-show="!loading && history.length > 0" x-cloak class="overflow-x-auto rounded-xl border border-gray-200 bg-white">
-        <table class="min-w-full divide-y divide-gray-200 text-sm">
-            <thead class="bg-gray-50">
+    <div x-show="!loading && history.length > 0" x-cloak class="table-responsive">
+        <table class="table align-middle bg-white rounded-4 overflow-hidden mb-0">
+            <thead class="table-light">
                 <tr>
-                    <th class="px-3 py-3 text-left font-medium text-gray-500 sm:px-4">Kuis</th>
-                    <th class="hidden px-3 py-3 text-left font-medium text-gray-500 sm:table-cell sm:px-4">Kursus</th>
-                    <th class="px-3 py-3 text-left font-medium text-gray-500 sm:px-4">Nilai</th>
-                    <th class="px-3 py-3 text-left font-medium text-gray-500 sm:px-4">Status</th>
-                    <th class="hidden px-3 py-3 text-left font-medium text-gray-500 md:table-cell sm:px-4">Tanggal</th>
+                    <th>Kuis</th>
+                    <th class="d-none d-sm-table-cell">Kursus</th>
+                    <th>Nilai</th>
+                    <th>Status</th>
+                    <th class="d-none d-md-table-cell">Tanggal</th>
                 </tr>
             </thead>
-            <tbody class="divide-y divide-gray-100">
-                <template x-for="(attempt, index) in history" :key="index">
+            <tbody>
+                <template x-for="(attempt, index) in visible" :key="index">
                     <tr>
-                        <td class="px-3 py-3 text-gray-900 sm:px-4">
+                        <td>
                             <span x-text="attempt.quiz_title"></span>
-                            <span class="block text-xs text-gray-500 sm:hidden" x-text="attempt.course_title"></span>
+                            <span class="d-block small text-body d-sm-none" x-text="attempt.course_title"></span>
                         </td>
-                        <td class="hidden px-3 py-3 text-gray-600 sm:table-cell sm:px-4" x-text="attempt.course_title"></td>
-                        <td class="px-3 py-3 font-medium text-gray-900 sm:px-4" x-text="`${attempt.score}/100`"></td>
-                        <td class="px-3 py-3 sm:px-4">
+                        <td class="d-none d-sm-table-cell text-body" x-text="attempt.course_title"></td>
+                        <td class="fw-semibold" x-text="`${attempt.score}/100`"></td>
+                        <td>
                             <span
-                                class="rounded-full px-2 py-0.5 text-xs font-medium"
-                                :class="attempt.passed ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'"
+                                class="badge rounded-pill"
+                                :class="attempt.passed ? 'text-bg-success' : 'text-bg-warning'"
                                 x-text="attempt.passed ? 'Lulus' : 'Belum Lulus'"
                             ></span>
                         </td>
-                        <td
-                            class="hidden px-3 py-3 text-gray-500 md:table-cell sm:px-4"
-                            x-text="new Date(attempt.finished_at).toLocaleString('id-ID')"
-                        ></td>
+                        <td class="d-none d-md-table-cell text-body" x-text="new Date(attempt.finished_at).toLocaleString('id-ID')"></td>
                     </tr>
                 </template>
             </tbody>

@@ -7,6 +7,7 @@ use App\Models\Quiz;
 use App\Models\QuizAnswer;
 use App\Models\QuizAttempt;
 use App\Models\QuizQuestion;
+use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -126,12 +127,14 @@ class QuizController extends Controller
     }
 
     /**
-     * Riwayat percobaan kuis milik pengguna yang sedang masuk, dipakai
-     * Alpine.js di halaman dasbor (resources/views/components/quiz-history-list.blade.php)
-     * lewat fetch — menggantikan versi lama yang membaca localStorage.
-     * Route ini dilindungi middleware 'auth' (lihat routes/web.php).
+     * Riwayat percobaan kuis milik pengguna yang sedang masuk. Dibuka
+     * lewat browser menampilkan halaman HTML (resources/views/quizzes/history.blade.php);
+     * dipanggil lewat fetch dengan header Accept: application/json (dipakai
+     * Alpine.js di resources/views/components/quiz-history-list.blade.php)
+     * mengembalikan JSON seperti sebelumnya — konsumen lama tidak
+     * terpengaruh. Route ini dilindungi middleware 'auth' (lihat routes/web.php).
      */
-    public function history(Request $request): JsonResponse
+    public function history(Request $request): JsonResponse|View
     {
         $attempts = QuizAttempt::where('user_id', $request->user()->id)
             ->with(['quiz.module', 'quiz.course'])
@@ -146,7 +149,11 @@ class QuizController extends Controller
                 'finished_at' => $attempt->finished_at?->toIso8601String(),
             ]);
 
-        return response()->json(['attempts' => $attempts]);
+        if ($request->wantsJson()) {
+            return response()->json(['attempts' => $attempts]);
+        }
+
+        return view('quizzes.history', ['attempts' => $attempts]);
     }
 
     /**

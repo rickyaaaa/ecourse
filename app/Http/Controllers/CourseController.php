@@ -69,6 +69,7 @@ class CourseController extends Controller
     private function presentCourse(Course $course): array
     {
         $enrollment = $course->relationLoaded('enrollments') ? $course->enrollments->first() : null;
+        $progress = $enrollment ? $this->enrollmentProgress($course, $enrollment) : null;
 
         return [
             'id' => $course->id,
@@ -84,25 +85,31 @@ class CourseController extends Controller
             'lessons_count' => $course->lessons_count,
             'students_count' => $course->students_count,
             'is_published' => $course->is_published,
-            'enrollment' => $enrollment ? ['status' => $enrollment->status] : null,
-            'continue_url' => $enrollment ? $this->continueUrl($course, $enrollment) : null,
+            'enrollment' => $enrollment ? [
+                'status' => $enrollment->status,
+                'progress' => $progress['progress'],
+            ] : null,
+            'continue_url' => $progress['continue_url'] ?? null,
         ];
     }
 
     /**
-     * URL "Lanjutkan Belajar"/"Ulangi Kursus": pelajaran terakhir yang
-     * diakses kalau ada, kalau belum pernah lanjut ke pelajaran pertama
-     * yang belum selesai, atau pelajaran pertama kursus (sama seperti
-     * logika di DashboardController::enrolledCoursesFor).
+     * Progres (%) & URL "Lanjutkan Belajar"/"Ulangi Kursus" untuk satu
+     * enrollment: pelajaran terakhir yang diakses kalau ada, kalau belum
+     * pernah lanjut ke pelajaran pertama yang belum selesai, atau
+     * pelajaran pertama kursus (sama seperti logika di
+     * DashboardController::enrolledCoursesFor).
+     *
+     * @return array{progress: int, continue_url: ?string}
      */
-    private function continueUrl(Course $course, Enrollment $enrollment): ?string
+    private function enrollmentProgress(Course $course, Enrollment $enrollment): array
     {
         $lessonIds = $course->modules()->with('lessons')->get()
             ->flatMap(fn (Module $module) => $module->lessons->pluck('id'))
             ->values();
 
         if ($lessonIds->isEmpty()) {
-            return null;
+            return ['progress' => 0, 'continue_url' => null];
         }
 
         $progressRows = LessonProgress::where('user_id', $enrollment->user_id)
@@ -121,7 +128,12 @@ class CourseController extends Controller
             ?? $lessonIds->first(fn ($id) => ! $completedLessonIds->contains($id))
             ?? $lessonIds->first();
 
-        return route('lessons.show', [$course->slug, $continueLessonId]);
+        $progress = (int) round(($lessonIds->intersect($completedLessonIds)->count() / $lessonIds->count()) * 100);
+
+        return [
+            'progress' => $progress,
+            'continue_url' => route('lessons.show', [$course->slug, $continueLessonId]),
+        ];
     }
 
     /**

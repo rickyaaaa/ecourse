@@ -1,19 +1,19 @@
-@extends('layouts.app')
+@extends('layouts.escul')
 
 @section('title', $lesson->title . ' — ' . $course->title)
 
 @section('content')
-<div class="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
-    <nav class="mb-6 flex flex-wrap items-center gap-1 text-sm text-gray-500">
-        <a href="{{ route('courses.index') }}" class="hover:text-indigo-600">Katalog Kursus</a>
-        <span>/</span>
-        <a href="{{ route('courses.show', $course->slug) }}" class="hover:text-indigo-600">{{ $course->title }}</a>
-        <span>/</span>
-        <span class="text-gray-700">{{ $module->title }}</span>
+<div class="container py-4">
+    <nav class="mb-4 small text-body">
+        <a href="{{ route('courses.index') }}" class="text-inherit">Katalog Kursus</a>
+        <span class="mx-1">/</span>
+        <a href="{{ route('courses.show', $course->slug) }}" class="text-inherit">{{ $course->title }}</a>
+        <span class="mx-1">/</span>
+        <span>{{ $module->title }}</span>
     </nav>
 
     <div
-        class="grid grid-cols-1 gap-6 lg:grid-cols-[300px_1fr]"
+        class="lesson-layout"
         x-data="{
             completed: {{ $isCompleted ? 'true' : 'false' }},
             loading: false,
@@ -33,7 +33,6 @@
                         if (data) {
                             this.completed = data.is_completed;
                         } else {
-                            // Belum login — muat ulang supaya pesan "silakan masuk" tampil.
                             window.location.reload();
                         }
                     })
@@ -43,129 +42,96 @@
             },
         }"
     >
-        <aside class="order-2 lg:order-1">
-            <div class="rounded-xl border border-gray-200 bg-white p-4 lg:sticky lg:top-6">
-                <p class="mb-3 truncate px-1 text-sm font-semibold text-gray-900">{{ $course->title }}</p>
+        <aside class="lesson-sidebar">
+            <p class="fw-semibold px-3 pt-3 mb-2 text-truncate">{{ $course->title }}</p>
 
-                <div class="max-h-[70vh] space-y-4 overflow-y-auto pr-1">
-                    @foreach ($modules as $syllabusModule)
-                        <div>
-                            <p class="mb-1 px-2 text-xs font-semibold uppercase tracking-wide text-gray-400">
-                                {{ $syllabusModule->title }}
-                            </p>
-                            <ul class="space-y-0.5">
-                                @foreach ($syllabusModule->lessons as $syllabusLesson)
-                                    @php $isActive = $syllabusLesson->id === $lesson->id; @endphp
-                                    <li>
-                                        <a
-                                            href="{{ route('lessons.show', [$course->slug, $syllabusLesson->id]) }}"
-                                            class="flex items-center gap-2 rounded-md px-2 py-1.5 text-sm {{ $isActive ? 'bg-indigo-50 font-medium text-indigo-700' : 'text-gray-600 hover:bg-gray-50' }}"
-                                        >
-                                            <span aria-hidden="true">{{ $syllabusLesson->video_url ? '🎬' : '📄' }}</span>
-                                            <span class="line-clamp-1 flex-1">{{ $syllabusLesson->title }}</span>
-                                            @if ($syllabusLesson->id === $lesson->id)
-                                                <span x-show="completed" x-cloak class="text-emerald-600" aria-hidden="true">✓</span>
-                                            @elseif (in_array($syllabusLesson->id, $completedLessonIds, true))
-                                                <span class="text-emerald-600" aria-hidden="true">✓</span>
-                                            @endif
-                                        </a>
-                                    </li>
-                                @endforeach
-                                <li>
-                                    <a
-                                        href="{{ route('quizzes.show', [$course->slug, $syllabusModule->id]) }}"
-                                        class="flex items-center gap-2 rounded-md px-2 py-1.5 text-sm font-medium text-amber-700 hover:bg-amber-50"
-                                    >
-                                        <span aria-hidden="true">📝</span>
-                                        <span class="line-clamp-1">Kerjakan Kuis Modul</span>
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
+            @foreach ($modules as $syllabusModule)
+                <div class="mb-2">
+                    <p class="text-uppercase small text-body px-3 mb-1" style="font-size:11px;letter-spacing:.05em;">
+                        {{ $syllabusModule->title }}
+                    </p>
+                    @foreach ($syllabusModule->lessons as $syllabusLesson)
+                        @php $isActive = $syllabusLesson->id === $lesson->id; @endphp
+                        <a
+                            href="{{ route('lessons.show', [$course->slug, $syllabusLesson->id]) }}"
+                            class="lesson-sidebar-link {{ $isActive ? 'is-active' : '' }} {{ in_array($syllabusLesson->id, $completedLessonIds, true) ? 'is-completed' : '' }}"
+                        >
+                            <i class="fal {{ $syllabusLesson->video_url ? 'fa-circle-play' : 'fa-file-lines' }}"></i>
+                            <span class="text-truncate flex-grow-1">{{ $syllabusLesson->title }}</span>
+                            @if ($isActive)
+                                <i class="fal fa-circle-check lesson-sidebar-check" x-show="completed" x-cloak></i>
+                            @elseif (in_array($syllabusLesson->id, $completedLessonIds, true))
+                                <i class="fal fa-circle-check lesson-sidebar-check"></i>
+                            @endif
+                        </a>
                     @endforeach
+                    <a href="{{ route('quizzes.show', [$course->slug, $syllabusModule->id]) }}" class="lesson-sidebar-link" style="color:var(--theme-color2);">
+                        <i class="fal fa-clipboard-check"></i>
+                        <span class="text-truncate">Kerjakan Kuis Modul</span>
+                    </a>
                 </div>
-            </div>
+            @endforeach
         </aside>
 
-        <div class="order-1 lg:order-2">
-            <div class="rounded-xl border border-gray-200 bg-white p-6 sm:p-8">
-                <p class="text-sm font-medium text-indigo-600">{{ $module->title }}</p>
-                <h1 class="mt-1 text-2xl font-bold text-gray-900 sm:text-3xl">{{ $lesson->title }}</h1>
+        <div>
+            <div class="bg-white border rounded-4 p-4 p-sm-5">
+                <p class="fw-semibold mb-1" style="color:var(--theme-color);">{{ $module->title }}</p>
+                <h1 class="h2 mb-4">{{ $lesson->title }}</h1>
 
                 @if ($lesson->video_url)
-                    <div class="mt-6 aspect-video overflow-hidden rounded-lg bg-black">
+                    <div class="ratio ratio-16x9 rounded-3 overflow-hidden bg-dark mb-4">
                         <iframe
                             src="{{ $lesson->embedUrl() }}"
                             title="{{ $lesson->title }}"
-                            class="h-full w-full"
                             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                             allowfullscreen
                         ></iframe>
                     </div>
                 @else
                     {{-- Konten ditulis admin lewat editor materi (Filament), jadi HTML tepercaya --}}
-                    <div class="prose prose-indigo mt-6 max-w-none prose-headings:font-semibold prose-a:text-indigo-600">
+                    <div class="lesson-content mb-4">
                         {!! $lesson->content !!}
                     </div>
                 @endif
 
-                <div class="mt-6 flex flex-wrap items-center gap-3">
+                <div class="d-flex flex-wrap align-items-center gap-3">
                     @if ($lesson->file_path)
-                        <a
-                            href="{{ route('lessons.download', [$course->slug, $lesson->id]) }}"
-                            class="inline-flex items-center gap-2 rounded-md border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
-                        >
-                            <span aria-hidden="true">📎</span>
-                            Unduh Materi Pendukung
+                        <a href="{{ route('lessons.download', [$course->slug, $lesson->id]) }}" class="th-btn style-border2 btn-sm">
+                            <i class="fal fa-paperclip me-2"></i>Unduh Materi Pendukung
                         </a>
                     @endif
 
-                    <form
-                        method="POST"
-                        action="{{ route('lessons.toggleComplete', [$course->slug, $lesson->id]) }}"
-                        @submit.prevent="toggle()"
-                    >
+                    <form method="POST" action="{{ route('lessons.toggleComplete', [$course->slug, $lesson->id]) }}" @submit.prevent="toggle()">
                         @csrf
                         <button
                             type="submit"
                             :disabled="loading"
-                            class="inline-flex items-center gap-2 rounded-md border px-4 py-2 text-sm font-medium transition disabled:cursor-wait disabled:opacity-60"
-                            :class="completed
-                                ? 'border-emerald-600 bg-emerald-50 text-emerald-700 hover:bg-emerald-100'
-                                : 'border-gray-300 text-gray-700 hover:bg-gray-50'"
+                            class="th-btn btn-sm"
+                            :class="completed ? '' : 'style-border2'"
                         >
-                            <span x-text="completed ? '✅' : '⬜'" aria-hidden="true"></span>
-                            <span x-text="completed ? 'Selesai' : 'Tandai Selesai'"></span>
+                            <i class="fal" :class="completed ? 'fa-circle-check' : 'fa-circle'"></i>
+                            <span x-text="completed ? ' Selesai' : ' Tandai Selesai'"></span>
                         </button>
                     </form>
                 </div>
             </div>
 
-            <div class="mt-4 flex items-center justify-between gap-3">
+            <div class="d-flex align-items-center justify-content-between gap-3 mt-4">
                 @if ($previousLesson)
-                    <a
-                        href="{{ route('lessons.show', [$course->slug, $previousLesson->id]) }}"
-                        class="inline-flex items-center gap-1 rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
-                    >
-                        &larr; Pelajaran Sebelumnya
+                    <a href="{{ route('lessons.show', [$course->slug, $previousLesson->id]) }}" class="th-btn style-border2 btn-sm">
+                        <i class="fal fa-arrow-left me-2"></i>Sebelumnya
                     </a>
                 @else
                     <span></span>
                 @endif
 
                 @if ($nextLesson)
-                    <a
-                        href="{{ route('lessons.show', [$course->slug, $nextLesson->id]) }}"
-                        class="inline-flex items-center gap-1 rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-500"
-                    >
-                        Pelajaran Berikutnya &rarr;
+                    <a href="{{ route('lessons.show', [$course->slug, $nextLesson->id]) }}" class="th-btn btn-sm">
+                        Berikutnya<i class="fal fa-arrow-right ms-2"></i>
                     </a>
                 @else
-                    <a
-                        href="{{ route('courses.show', $course->slug) }}"
-                        class="inline-flex items-center gap-1 rounded-md bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-500"
-                    >
-                        Selesai — Kembali ke Silabus
+                    <a href="{{ route('courses.show', $course->slug) }}" class="th-btn btn-sm">
+                        <i class="fal fa-circle-check me-2"></i>Selesai — Kembali ke Silabus
                     </a>
                 @endif
             </div>

@@ -4,31 +4,28 @@
     $continueLabel = $course['progress'] >= 100 ? 'Ulas Kembali Kursus' : 'Lanjutkan Belajar';
 @endphp
 
-<div {{ $attributes->class(['rounded-xl border border-gray-200 bg-white p-5']) }}>
-    <div class="flex items-center gap-3">
-        <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br {{ $course['thumbnail_color'] }} text-lg">
+<div {{ $attributes->class(['stat-card h-100']) }}>
+    <div class="d-flex align-items-center gap-3">
+        <div class="course-thumb-placeholder bg-gradient {{ $course['thumbnail_color'] }} text-white rounded-3 flex-shrink-0" style="width:48px;height:48px;font-size:1.3rem;">
             {{ $course['thumbnail_icon'] }}
         </div>
         <div class="min-w-0">
-            <p class="truncate font-medium text-gray-900">{{ $course['title'] }}</p>
-            <p class="text-xs text-gray-500">{{ $course['category'] }}</p>
+            <p class="fw-semibold mb-0 text-truncate">{{ $course['title'] }}</p>
+            <p class="text-body small mb-0">{{ $course['category'] }}</p>
         </div>
     </div>
 
-    <div class="mt-4">
-        <div class="flex items-center justify-between text-xs text-gray-500">
+    <div class="mt-3">
+        <div class="d-flex align-items-center justify-content-between small text-body mb-1">
             <span>Progres</span>
             <span>{{ $course['progress'] }}%</span>
         </div>
-        <div class="mt-1 h-2 rounded-full bg-gray-100">
-            <div class="h-2 rounded-full bg-indigo-600" style="width: {{ $course['progress'] }}%"></div>
+        <div class="lesson-progress-track">
+            <div class="lesson-progress-fill" style="width: {{ $course['progress'] }}%"></div>
         </div>
     </div>
 
-    <a
-        href="{{ $course['continue_url'] }}"
-        class="mt-4 inline-flex w-full items-center justify-center rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-500"
-    >
+    <a href="{{ $course['continue_url'] }}" class="th-btn btn-sm w-100 justify-content-center mt-3">
         {{ $continueLabel }}
     </a>
 </div>

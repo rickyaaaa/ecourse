@@ -1,19 +1,19 @@
-@extends('layouts.app')
+@extends('layouts.escul')
 
 @section('title', $quiz['title'] . ' — ' . $course->title)
 
 @section('content')
-<div class="mx-auto max-w-3xl px-4 py-8 sm:px-6 lg:px-8">
-    <nav class="mb-6 flex flex-wrap items-center gap-1 text-sm text-gray-500">
-        <a href="{{ route('courses.index') }}" class="hover:text-indigo-600">Katalog Kursus</a>
-        <span>/</span>
-        <a href="{{ route('courses.show', $course->slug) }}" class="hover:text-indigo-600">{{ $course->title }}</a>
-        <span>/</span>
-        <span class="text-gray-700">{{ $module->title }}</span>
+<div class="container py-4" style="max-width:760px;">
+    <nav class="mb-4 small text-body">
+        <a href="{{ route('courses.index') }}" class="text-inherit">Katalog Kursus</a>
+        <span class="mx-1">/</span>
+        <a href="{{ route('courses.show', $course->slug) }}" class="text-inherit">{{ $course->title }}</a>
+        <span class="mx-1">/</span>
+        <span>{{ $module->title }}</span>
     </nav>
 
     <div
-        class="rounded-xl border border-gray-200 bg-white p-6 sm:p-8"
+        class="bg-white border rounded-4 p-4 p-sm-5"
         x-data="{
             answers: {},
             submitted: false,
@@ -88,27 +88,30 @@
             },
         }"
     >
-        <p class="text-sm font-medium text-indigo-600">{{ $module->title }}</p>
-        <h1 class="mt-1 text-2xl font-bold text-gray-900 sm:text-3xl">{{ $quiz['title'] }}</h1>
-        <p class="mt-2 text-sm text-gray-600">{{ $quiz['description'] }}</p>
-        <p class="mt-1 text-xs text-gray-500">Nilai kelulusan: {{ $quiz['passing_score'] }}</p>
+        <p class="fw-semibold mb-1" style="color:var(--theme-color);">{{ $module->title }}</p>
+        <h1 class="h2 mb-2">{{ $quiz['title'] }}</h1>
+        <p class="text-body mb-1">{{ $quiz['description'] }}</p>
+        <p class="text-body small">Nilai kelulusan: {{ $quiz['passing_score'] }}</p>
 
-        <form @submit.prevent="submit()" class="mt-8 space-y-8">
+        <form @submit.prevent="submit()" class="mt-4">
             @foreach ($quiz['questions'] as $index => $question)
-                <fieldset :disabled="submitted || submitting" class="border-t border-gray-100 pt-6 first:border-t-0 first:pt-0">
-                    <legend class="mb-3 font-medium text-gray-900">
+                <fieldset :disabled="submitted || submitting" class="border-top pt-4 mt-4 {{ $loop->first ? 'border-0 pt-0 mt-0' : '' }}">
+                    <legend class="mb-3 fw-semibold fs-6">
                         {{ $index + 1 }}. {{ $question['question_text'] }}
                     </legend>
 
-                    <div class="space-y-2">
+                    <div class="d-flex flex-column gap-2">
                         @foreach ($question['options'] as $option)
-                            <label class="flex cursor-pointer items-center gap-2 rounded-md border border-gray-200 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 has-[:checked]:border-indigo-500 has-[:checked]:bg-indigo-50">
+                            <label
+                                class="quiz-option-card d-flex align-items-center gap-2 mb-0"
+                                :class="isSelected({{ $question['id'] }}, {{ $option['id'] }}) && 'is-selected'"
+                            >
                                 <input
                                     type="radio"
                                     name="question-{{ $question['id'] }}"
                                     value="{{ $option['id'] }}"
                                     x-model="answers[{{ $question['id'] }}]"
-                                    class="text-indigo-600 focus:ring-indigo-500"
+                                    class="form-check-input mt-0 flex-shrink-0"
                                 >
                                 {{ $option['option_text'] }}
                             </label>
@@ -117,90 +120,67 @@
                 </fieldset>
             @endforeach
 
-            <div x-show="!submitted">
-                <p class="mb-2 text-sm text-gray-500" x-text="`${answeredCount} dari ${totalQuestions} soal terjawab`"></p>
+            <div x-show="!submitted" class="mt-4">
+                <p class="text-body small mb-2" x-text="`${answeredCount} dari ${totalQuestions} soal terjawab`"></p>
 
-                <p
-                    x-show="showIncompleteWarning"
-                    x-cloak
-                    class="mb-2 text-sm font-medium text-red-600"
-                >
+                <p x-show="showIncompleteWarning" x-cloak class="text-danger small fw-semibold mb-2">
                     Jawab semua soal dulu sebelum mengirim.
                 </p>
 
-                <p
-                    x-show="errorMessage"
-                    x-cloak
-                    class="mb-2 text-sm font-medium text-red-600"
-                    x-text="errorMessage"
-                ></p>
+                <p x-show="errorMessage" x-cloak class="text-danger small fw-semibold mb-2" x-text="errorMessage"></p>
 
-                <button
-                    type="submit"
-                    :disabled="submitting"
-                    class="inline-flex items-center justify-center rounded-md bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-indigo-500 disabled:cursor-wait disabled:opacity-60"
-                >
+                <button type="submit" :disabled="submitting" class="th-btn">
                     <span x-text="submitting ? 'Mengirim…' : 'Kirim Jawaban'"></span>
                 </button>
             </div>
 
-            <div x-show="submitted" x-cloak>
-                <div
-                    class="rounded-lg border px-6 py-5"
-                    :class="passed ? 'border-emerald-200 bg-emerald-50' : 'border-amber-200 bg-amber-50'"
-                >
-                    <p class="text-sm font-medium" :class="passed ? 'text-emerald-700' : 'text-amber-700'">
+            <div x-show="submitted" x-cloak class="mt-4">
+                <div class="rounded-4 p-4" :class="passed ? 'bg-success-subtle' : 'bg-warning-subtle'">
+                    <p class="fw-semibold mb-0">
                         <span x-text="passed ? '✅ Selamat, kamu lulus!' : '⚠️ Belum lulus, coba lagi ya.'"></span>
                     </p>
 
-                    <p class="mt-2 text-3xl font-bold text-gray-900">
-                        <span x-text="score"></span><span class="text-base font-normal text-gray-500">/100</span>
+                    <p class="display-6 fw-bold mb-0 mt-2">
+                        <span x-text="score"></span><span class="fs-5 fw-normal text-body">/100</span>
                     </p>
 
-                    <p class="mt-1 text-sm text-gray-600">
+                    <p class="text-body small mb-0 mt-1">
                         <span x-text="correctCount"></span> dari <span x-text="totalQuestions"></span> jawaban benar
                         &middot; nilai kelulusan <span x-text="passingScore"></span>
                     </p>
 
-                    <button
-                        type="button"
-                        @click="retry()"
-                        class="mt-4 inline-flex items-center gap-1 rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
-                    >
-                        🔁 Ulangi Kuis
+                    <button type="button" @click="retry()" class="th-btn style-border2 btn-sm mt-3">
+                        <i class="fal fa-rotate-right me-2"></i>Ulangi Kuis
                     </button>
                 </div>
 
-                <div class="mt-6 space-y-6">
-                    <h2 class="text-lg font-semibold text-gray-900">Pembahasan</h2>
+                <div class="mt-4">
+                    <h2 class="h5 mb-3">Pembahasan</h2>
 
                     @foreach ($quiz['questions'] as $index => $question)
-                        <div class="rounded-lg border border-gray-200 p-4">
-                            <p class="font-medium text-gray-900">{{ $index + 1 }}. {{ $question['question_text'] }}</p>
+                        <div class="border rounded-4 p-3 mb-3">
+                            <p class="fw-semibold mb-2">{{ $index + 1 }}. {{ $question['question_text'] }}</p>
 
-                            <div class="mt-3 space-y-1.5">
+                            <div class="d-flex flex-column gap-2">
                                 @foreach ($question['options'] as $option)
                                     <div
-                                        class="rounded-md border px-3 py-2 text-sm"
+                                        class="quiz-option-card"
                                         :class="{{ $option['is_correct'] ? 'true' : 'false' }}
-                                            ? 'border-emerald-500 bg-emerald-50 text-emerald-800'
-                                            : (isSelected({{ $question['id'] }}, {{ $option['id'] }}) ? 'border-red-500 bg-red-50 text-red-800' : 'border-gray-200 text-gray-600')"
+                                            ? 'is-correct'
+                                            : (isSelected({{ $question['id'] }}, {{ $option['id'] }}) ? 'is-incorrect' : '')"
                                     >
                                         {{ $option['option_text'] }}
 
                                         @if ($option['is_correct'])
-                                            <span class="ml-1 font-medium">— Jawaban benar</span>
+                                            <span class="fw-semibold">— Jawaban benar</span>
                                         @endif
 
-                                        <span
-                                            x-show="isSelected({{ $question['id'] }}, {{ $option['id'] }})"
-                                            class="ml-1 italic"
-                                        >(jawabanmu)</span>
+                                        <span x-show="isSelected({{ $question['id'] }}, {{ $option['id'] }})" class="fst-italic">(jawabanmu)</span>
                                     </div>
                                 @endforeach
                             </div>
 
-                            <p class="mt-3 rounded-md bg-indigo-50 px-3 py-2 text-sm text-indigo-800">
+                            <p class="rounded-3 p-2 mt-2 mb-0 small quiz-explanation">
                                 💡 {{ $question['explanation'] }}
                             </p>
                         </div>
@@ -210,11 +190,8 @@
         </form>
     </div>
 
-    <a
-        href="{{ route('courses.show', $course->slug) }}"
-        class="mt-6 inline-flex items-center gap-1 text-sm font-medium text-gray-600 hover:text-indigo-600"
-    >
-        &larr; Kembali ke silabus kursus
+    <a href="{{ route('courses.show', $course->slug) }}" class="d-inline-flex align-items-center gap-1 text-body small mt-3">
+        <i class="fal fa-arrow-left"></i>Kembali ke silabus kursus
     </a>
 </div>
 @endsection

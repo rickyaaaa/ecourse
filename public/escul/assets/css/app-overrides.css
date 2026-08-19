@@ -1,0 +1,233 @@
+/*
+ * Penyesuaian kecil di atas style.css bawaan template Escul, khusus untuk
+ * integrasi ke Platform Kursus Online. Palet warna (--theme-color,
+ * --theme-color2) SENGAJA dibiarkan memakai default template (teal/emas)
+ * — tidak diubah, sesuai permintaan "gunakan visual style dari template
+ * Escul apa adanya".
+ */
+
+/* Anchor menu (#katalog, #keunggulan, dst) tidak boleh tertutup header
+   sticky saat discroll-ke. */
+[id] {
+    scroll-margin-top: 110px;
+}
+
+/* Potong teks deskripsi kursus jadi maksimal 2/3 baris. */
+.text-truncate-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.text-truncate-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* Tombol "Keluar" di menu mobile — menu mobile aslinya cuma berisi <a>,
+   di sini perlu <button> di dalam <form> supaya method POST bisa dipakai,
+   jadi disamakan gayanya dengan link menu mobile lain. */
+.th-mobile-logout-btn {
+    display: block;
+    width: 100%;
+    padding: 0;
+    border: 0;
+    background: none;
+    font: inherit;
+    color: #e6484f;
+    text-align: center;
+    cursor: pointer;
+}
+
+/* Badge status kursus (di atas thumbnail card) & badge level/kategori. */
+.course-status-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    z-index: 2;
+    border-radius: 50px;
+    padding: 4px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #fff;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, .15);
+}
+
+.course-status-badge.is-ongoing { background: var(--theme-color2); }
+.course-status-badge.is-completed { background: #1cb098; }
+
+/* Placeholder thumbnail kursus (kalau course belum punya gambar asli) —
+   pakai warna & ikon dari App\Support\CoursePresentation, bukan gambar
+   template yang mengandung course palsu. */
+.course-thumb-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 200px;
+    font-size: 3rem;
+}
+
+/* Avatar lingkaran berisi inisial (dipakai di testimoni/dasbor, tanpa
+   foto orang sungguhan yang bisa disalahartikan sebagai testimoni asli). */
+.avatar-initials {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    color: #fff;
+    font-weight: 700;
+    font-size: 14px;
+    flex-shrink: 0;
+}
+
+/* Kartu statistik ringkas (dasbor, hero). */
+.stat-card {
+    border: 1px solid rgba(8, 0, 28, .08);
+    border-radius: 16px;
+    padding: 20px;
+    background: #fff;
+}
+
+/* Progress bar tipis untuk progres belajar. */
+.lesson-progress-track {
+    height: 8px;
+    border-radius: 50px;
+    background: #eef0f6;
+    overflow: hidden;
+}
+
+.lesson-progress-fill {
+    height: 100%;
+    border-radius: 50px;
+    background: var(--theme-color);
+}
+
+/* Sidebar silabus di halaman pelajaran (lesson). */
+.lesson-layout {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: 28px;
+    align-items: start;
+}
+
+@media (max-width: 991px) {
+    .lesson-layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+.lesson-sidebar {
+    position: sticky;
+    top: 100px;
+    max-height: calc(100vh - 120px);
+    overflow-y: auto;
+    border: 1px solid rgba(8, 0, 28, .08);
+    border-radius: 16px;
+    background: #fff;
+}
+
+@media (max-width: 991px) {
+    .lesson-sidebar {
+        position: static;
+        max-height: none;
+    }
+}
+
+.lesson-sidebar-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 16px;
+    font-size: 14px;
+    color: #4b5262;
+    border-left: 3px solid transparent;
+    transition: background-color .15s ease;
+}
+
+.lesson-sidebar-link:hover {
+    background: #f7f7fb;
+    color: var(--theme-color);
+}
+
+.lesson-sidebar-link.is-active {
+    background: #f2fbf9;
+    border-left-color: var(--theme-color);
+    color: var(--theme-color);
+    font-weight: 600;
+}
+
+.lesson-sidebar-link.is-completed .lesson-sidebar-check {
+    color: #1cb098;
+}
+
+/* Tipografi konten pelajaran (HTML dari admin lewat editor materi) —
+   pengganti ringan @tailwindcss/typography karena halaman ini tidak lagi
+   memuat Tailwind. */
+.lesson-content h2 {
+    font-size: 1.35rem;
+    font-weight: 700;
+    margin-top: 1.75rem;
+    margin-bottom: .75rem;
+}
+
+.lesson-content h2:first-child {
+    margin-top: 0;
+}
+
+.lesson-content p {
+    line-height: 1.75;
+    margin-bottom: 1rem;
+}
+
+.lesson-content ul, .lesson-content ol {
+    padding-left: 1.25rem;
+    margin-bottom: 1rem;
+}
+
+.lesson-content li {
+    margin-bottom: .4rem;
+    line-height: 1.6;
+}
+
+.lesson-content a {
+    color: var(--theme-color);
+}
+
+/* Kartu pilihan jawaban kuis. */
+.quiz-option-card {
+    display: block;
+    border: 1px solid rgba(8, 0, 28, .1);
+    border-radius: 12px;
+    padding: 14px 18px;
+    cursor: pointer;
+    transition: border-color .15s ease, background-color .15s ease;
+}
+
+.quiz-option-card:hover {
+    border-color: var(--theme-color);
+}
+
+.quiz-option-card.is-selected {
+    border-color: var(--theme-color);
+    background: #f2fbf9;
+}
+
+.quiz-option-card.is-correct {
+    border-color: #1cb098;
+    background: #eefaf6;
+}
+
+.quiz-option-card.is-incorrect {
+    border-color: #e6484f;
+    background: #fdeeee;
+}
+
+.quiz-explanation {
+    background: #f2fbf9;
+    color: #0f6b5c;
+}

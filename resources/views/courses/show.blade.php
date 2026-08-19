@@ -1,122 +1,186 @@
-@extends('layouts.marketing')
+@extends('layouts.escul')
 
 @section('title', $course['title'] . ' — Platform Kursus Online')
-@section('meta_description', Str::limit($course['description'], 150))
+@section('meta_description', Str::limit(strip_tags($course['description']), 150))
 
 @section('content')
-<section class="relative overflow-hidden bg-gradient-to-br {{ $course['thumbnail_color'] }}">
-    <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_15%_15%,rgba(255,255,255,0.18),transparent_50%)]"></div>
+<x-escul.breadcrumb :title="$course['title']" :items="[$course['category'] => null]" />
 
-    <div class="relative mx-auto max-w-5xl px-4 py-14 sm:px-6 lg:px-8">
-        <a href="{{ route('courses.index') }}" class="inline-flex items-center gap-1.5 text-sm font-medium text-white/85 transition hover:text-white">
-            <svg class="size-4" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 15 7 10l5-5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            Kembali ke Katalog Kursus
-        </a>
+<section class="space-top space-extra-bottom overflow-hidden">
+    <div class="container">
+        <div class="row gx-40 gy-4">
+            <div class="col-xxl-8 col-lg-7">
+                <div class="course-single mb-30">
+                    <div class="course-single-top">
+                        <div class="course-img">
+                            <div class="course-thumb-placeholder bg-gradient {{ $course['thumbnail_color'] }} text-white" style="height:280px;border-radius:12px;">
+                                <span class="display-3" aria-hidden="true">{{ $course['thumbnail_icon'] }}</span>
+                            </div>
+                        </div>
+                        <h1 class="course-title">{{ $course['title'] }}</h1>
 
-        <div class="mt-5 flex items-center gap-2">
-            <span class="rounded-full bg-white/20 px-3 py-1 text-xs font-medium text-white backdrop-blur">
-                {{ $course['category'] }}
-            </span>
-            @if (! empty($course['level']))
-                <span class="rounded-full bg-white/20 px-3 py-1 text-xs font-medium text-white backdrop-blur">
-                    {{ $course['level'] }}
-                </span>
-            @endif
-        </div>
+                        <div class="box-content">
+                            <div class="course-info">
+                                <div class="box-icon"><i class="fal fa-tag"></i></div>
+                                <div class="course-info-details">
+                                    <span class="course-info-title">Kategori:</span>
+                                    <h4 class="course-info-text">{{ $course['category'] }}</h4>
+                                </div>
+                            </div>
+                            @if (! empty($course['level']))
+                                <div class="course-info">
+                                    <div class="box-icon"><i class="fal fa-signal-bars"></i></div>
+                                    <div class="course-info-details">
+                                        <span class="course-info-title">Level:</span>
+                                        <h4 class="course-info-text">{{ $course['level'] }}</h4>
+                                    </div>
+                                </div>
+                            @endif
+                            <div class="course-info">
+                                <div class="box-icon"><i class="fal fa-users"></i></div>
+                                <div class="course-info-details">
+                                    <span class="course-info-title">Pelajar:</span>
+                                    <h4 class="course-info-text">{{ number_format($course['students_count'], 0, ',', '.') }}+</h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
-        <h1 class="mt-4 text-balance font-display text-3xl font-bold tracking-[-0.02em] text-white sm:text-4xl">{{ $course['title'] }}</h1>
-        <p class="mt-3 max-w-2xl text-pretty leading-relaxed text-white/90">{{ $course['description'] }}</p>
+                    <div class="course-single-bottom">
+                        <ul class="nav course-tab" id="courseTab" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <a class="nav-link active" id="description-tab" data-bs-toggle="tab" href="#Coursedescription" role="tab" aria-controls="Coursedescription" aria-selected="true"><i class="fa-regular fa-bookmark"></i>Ringkasan</a>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <a class="nav-link" id="curriculam-tab" data-bs-toggle="tab" href="#curriculam" role="tab" aria-controls="curriculam" aria-selected="false"><i class="fa-regular fa-book"></i>Silabus</a>
+                            </li>
+                        </ul>
+                        <div class="tab-content" id="courseTabContent">
+                            <div class="tab-pane fade show active" id="Coursedescription" role="tabpanel" aria-labelledby="description-tab">
+                                <div class="course-description">
+                                    <h5 class="h5 mb-4">Tentang Kursus Ini</h5>
+                                    @if (! empty($course['description']))
+                                        <p>{{ $course['description'] }}</p>
+                                    @else
+                                        <p class="text-body">Belum ada deskripsi untuk kursus ini.</p>
+                                    @endif
 
-        <div class="mt-7 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-white/90">
-            <span class="flex items-center gap-1.5">📚 {{ $course['modules_count'] }} modul</span>
-            <span class="flex items-center gap-1.5">📝 {{ $course['lessons_count'] }} pelajaran</span>
-            <span class="flex items-center gap-1.5">👥 {{ number_format($course['students_count'], 0, ',', '.') }} pelajar</span>
+                                    <div class="row gy-4 mt-2">
+                                        <div class="col-lg-6">
+                                            <div class="stat-card text-center">
+                                                <p class="mb-0 fw-bold fs-3">{{ $course['modules_count'] }}</p>
+                                                <p class="mb-0 text-body small">Modul</p>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div class="stat-card text-center">
+                                                <p class="mb-0 fw-bold fs-3">{{ $course['lessons_count'] }}</p>
+                                                <p class="mb-0 text-body small">Pelajaran</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="curriculam" role="tabpanel" aria-labelledby="curriculam-tab">
+                                <div class="course-curriculam">
+                                    <h5 class="h5 mb-3">Silabus Kursus</h5>
+
+                                    <div class="accordion" id="syllabusAccordion">
+                                        @forelse ($syllabus as $index => $module)
+                                            <div class="accordion-card style2">
+                                                <div class="accordion-header" id="syllabus-heading-{{ $module['id'] }}">
+                                                    <button
+                                                        class="accordion-button {{ $index === 0 ? '' : 'collapsed' }}"
+                                                        type="button"
+                                                        data-bs-toggle="collapse"
+                                                        data-bs-target="#syllabus-collapse-{{ $module['id'] }}"
+                                                        aria-expanded="{{ $index === 0 ? 'true' : 'false' }}"
+                                                        aria-controls="syllabus-collapse-{{ $module['id'] }}"
+                                                    >
+                                                        {{ $module['title'] }}
+                                                        <span class="text-body small fw-normal ms-2">({{ count($module['lessons']) }} pelajaran)</span>
+                                                    </button>
+                                                </div>
+                                                <div
+                                                    id="syllabus-collapse-{{ $module['id'] }}"
+                                                    class="accordion-collapse collapse {{ $index === 0 ? 'show' : '' }}"
+                                                    aria-labelledby="syllabus-heading-{{ $module['id'] }}"
+                                                    data-bs-parent="#syllabusAccordion"
+                                                >
+                                                    <div class="accordion-body pt-0">
+                                                        <ul class="list-unstyled mb-0">
+                                                            @foreach ($module['lessons'] as $lesson)
+                                                                <li class="border-top py-2">
+                                                                    <a href="{{ route('lessons.show', [$course['slug'], $lesson['id']]) }}" class="text-inherit d-flex align-items-center gap-2">
+                                                                        <i class="fal {{ $lesson['type'] === 'video' ? 'fa-circle-play' : 'fa-file-lines' }} text-theme"></i>
+                                                                        {{ $lesson['title'] }}
+                                                                    </a>
+                                                                </li>
+                                                            @endforeach
+                                                            <li class="border-top py-2">
+                                                                <a href="{{ route('quizzes.show', [$course['slug'], $module['id']]) }}" class="text-inherit d-flex align-items-center gap-2 fw-semibold" style="color:var(--theme-color2);">
+                                                                    <i class="fal fa-clipboard-check"></i>
+                                                                    Kerjakan Kuis Modul Ini
+                                                                </a>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        @empty
+                                            <p class="text-body">Silabus kursus ini belum tersedia.</p>
+                                        @endforelse
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xxl-4 col-lg-5">
+                <aside class="sidebar-area pt-0">
+                    <div class="widget widget_info widget_course_info" style="position:sticky;top:100px;">
+                        <h3 class="widget_title">Ikuti Kursus Ini</h3>
+
+                        <x-enroll-status :enrollment="$course['enrollment']" :course="$course['slug']" :continue-url="$course['continue_url']" />
+
+                        <h3 class="widget_title mt-30">Informasi Kursus</h3>
+                        <div class="info-list">
+                            <ul>
+                                <li>
+                                    <i class="fa-light fa-tag"></i>
+                                    <strong>Kategori: </strong>
+                                    <span>{{ $course['category'] }}</span>
+                                </li>
+                                @if (! empty($course['level']))
+                                    <li>
+                                        <i class="fa-light fa-signal-bars"></i>
+                                        <strong>Level: </strong>
+                                        <span>{{ $course['level'] }}</span>
+                                    </li>
+                                @endif
+                                <li>
+                                    <i class="fa-light fa-file"></i>
+                                    <strong>Modul: </strong>
+                                    <span>{{ $course['modules_count'] }}</span>
+                                </li>
+                                <li>
+                                    <i class="fa-light fa-book-open"></i>
+                                    <strong>Pelajaran: </strong>
+                                    <span>{{ $course['lessons_count'] }}</span>
+                                </li>
+                                <li>
+                                    <i class="fal fa-users"></i>
+                                    <strong>Pelajar: </strong>
+                                    <span>{{ number_format($course['students_count'], 0, ',', '.') }}</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </aside>
+            </div>
         </div>
     </div>
 </section>
-
-<div class="mx-auto grid max-w-5xl grid-cols-1 gap-8 px-4 py-12 sm:px-6 lg:grid-cols-3 lg:px-8">
-    <div class="lg:col-span-2">
-        <h2 class="mb-4 font-display text-xl font-semibold text-ink">Silabus Kursus</h2>
-
-        <div class="divide-y divide-black/5 overflow-hidden rounded-2xl border border-black/5 bg-white shadow-sm">
-            @foreach ($syllabus as $module)
-                <div x-data="{ open: {{ $loop->first ? 'true' : 'false' }} }">
-                    <button
-                        type="button"
-                        @click="open = !open"
-                        class="flex w-full items-center justify-between gap-3 px-5 py-4 text-left transition hover:bg-brand-50/50"
-                    >
-                        <div class="flex items-center gap-3">
-                            <span class="flex size-8 shrink-0 items-center justify-center rounded-full bg-brand-50 text-xs font-semibold text-brand-700">
-                                {{ $loop->iteration }}
-                            </span>
-                            <div>
-                                <p class="font-medium text-ink">{{ $module['title'] }}</p>
-                                <p class="text-xs text-ink-soft">{{ count($module['lessons']) }} pelajaran</p>
-                            </div>
-                        </div>
-                        <svg class="size-4 shrink-0 text-ink-soft transition" :class="open ? 'rotate-180' : ''" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"><path d="m5 7.5 5 5 5-5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                    </button>
-
-                    <ul
-                        x-show="open"
-                        x-transition:enter="transition ease-out duration-150"
-                        x-transition:enter-start="opacity-0 -translate-y-1"
-                        x-transition:enter-end="opacity-100 translate-y-0"
-                        class="space-y-1 px-5 pb-4 pl-16"
-                    >
-                        @foreach ($module['lessons'] as $lesson)
-                            <li>
-                                <a
-                                    href="{{ route('lessons.show', [$course['slug'], $lesson['id']]) }}"
-                                    class="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-ink-soft transition hover:bg-brand-50 hover:text-brand-700"
-                                >
-                                    <span aria-hidden="true">{{ $lesson['type'] === 'video' ? '🎬' : '📄' }}</span>
-                                    {{ $lesson['title'] }}
-                                </a>
-                            </li>
-                        @endforeach
-                        <li>
-                            <a
-                                href="{{ route('quizzes.show', [$course['slug'], $module['id']]) }}"
-                                class="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-gold-700 transition hover:bg-gold-50"
-                            >
-                                <span aria-hidden="true">📝</span>
-                                Kerjakan Kuis Modul Ini
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            @endforeach
-        </div>
-    </div>
-
-    <div class="lg:col-span-1">
-        <div class="sticky top-24 rounded-2xl border border-black/5 bg-white p-6 shadow-sm">
-            <x-enroll-status :enrollment="$course['enrollment']" :course="$course['slug']" :continue-url="$course['continue_url']" />
-
-            <dl class="mt-6 space-y-2 border-t border-black/5 pt-4 text-sm text-ink-soft">
-                <div class="flex justify-between">
-                    <dt>Kategori</dt>
-                    <dd class="font-medium text-ink">{{ $course['category'] }}</dd>
-                </div>
-                @if (! empty($course['level']))
-                    <div class="flex justify-between">
-                        <dt>Level</dt>
-                        <dd class="font-medium text-ink">{{ $course['level'] }}</dd>
-                    </div>
-                @endif
-                <div class="flex justify-between">
-                    <dt>Modul</dt>
-                    <dd class="font-medium text-ink">{{ $course['modules_count'] }}</dd>
-                </div>
-                <div class="flex justify-between">
-                    <dt>Pelajaran</dt>
-                    <dd class="font-medium text-ink">{{ $course['lessons_count'] }}</dd>
-                </div>
-            </dl>
-        </div>
-    </div>
-</div>
 @endsection
