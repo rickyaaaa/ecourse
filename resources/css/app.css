@@ -1,0 +1,116 @@
+@import 'tailwindcss';
+@plugin '@tailwindcss/typography';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../**/*.blade.php';
+@source '../**/*.js';
+
+/*
+ * Identitas visual halaman publik (katalog, detail kursus, autentikasi):
+ * - Judul/display: Bricolage Grotesque — grotesque dengan karakter (ink-trap
+ *   halus di sudut huruf), terasa energik & modern tanpa jadi generik.
+ * - Isi/body: Hanken Grotesk — grotesque netral yang sangat mudah dibaca,
+ *   jadi kontras "berkarakter vs. pekerja keras" dengan Bricolage.
+ * Warna diperdalam dari indigo generik Tailwind ke ungu-indigo yang lebih
+ * jenuh (dipakai sebagai warna "Committed" di permukaan besar: hero, CTA,
+ * footer) + aksen emas hangat untuk rating/lencana/highlight kecil — supaya
+ * halaman publik terasa mewah tapi tetap senada dengan indigo yang sudah
+ * dipakai di dasbor/panel admin/autentikasi.
+ */
+@theme {
+    --font-sans: 'Hanken Grotesk', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+        'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-display: 'Bricolage Grotesque', 'Hanken Grotesk', ui-sans-serif, system-ui, sans-serif;
+
+    --color-brand-50: oklch(0.96 0.02 280);
+    --color-brand-100: oklch(0.91 0.045 279);
+    --color-brand-200: oklch(0.83 0.09 278);
+    --color-brand-300: oklch(0.73 0.13 277);
+    --color-brand-400: oklch(0.63 0.17 276);
+    --color-brand-500: oklch(0.54 0.2 274);
+    --color-brand-600: oklch(0.465 0.205 272);
+    --color-brand-700: oklch(0.4 0.19 270);
+    --color-brand-800: oklch(0.33 0.16 269);
+    --color-brand-900: oklch(0.26 0.12 269);
+    --color-brand-950: oklch(0.17 0.09 270);
+
+    --color-gold-50: oklch(0.97 0.03 85);
+    --color-gold-100: oklch(0.93 0.06 83);
+    --color-gold-200: oklch(0.87 0.1 78);
+    --color-gold-300: oklch(0.8 0.13 73);
+    --color-gold-400: oklch(0.75 0.15 68);
+    --color-gold-500: oklch(0.7 0.16 62);
+    --color-gold-600: oklch(0.62 0.16 52);
+    --color-gold-700: oklch(0.52 0.14 45);
+
+    /* Netral hangat sangat halus (chroma nyaris nol) — bukan cream/sand,
+       cuma sedikit condong ke hue brand supaya teks & permukaan terasa
+       menyatu dengan warna utama, bukan abu-abu generik. */
+    --color-ink: oklch(0.22 0.02 272);
+    --color-ink-soft: oklch(0.4 0.025 272);
+    --color-surface: oklch(0.985 0.003 272);
+}
+
+[x-cloak] {
+    display: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+@keyframes fade-up {
+    from {
+        opacity: 0;
+        transform: translateY(14px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-fade-up {
+    animation: fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/*
+ * .reveal tetap terlihat penuh secara default (tanpa JS/kalau JS gagal).
+ * Baru disembunyikan-lalu-dimunculkan kalau app.js sempat jalan (menambah
+ * class .js-ready ke <html>) DAN elemen belum ditandai .is-visible.
+ */
+.js-ready .reveal {
+    opacity: 0;
+    transform: translateY(16px);
+}
+
+.js-ready .reveal.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+    transition:
+        opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+        transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.js-ready .reveal.delay-1.is-visible { transition-delay: 0.08s; }
+.js-ready .reveal.delay-2.is-visible { transition-delay: 0.16s; }
+.js-ready .reveal.delay-3.is-visible { transition-delay: 0.24s; }
+.js-ready .reveal.delay-4.is-visible { transition-delay: 0.32s; }
+
+/* Scrollbar tersembunyi untuk strip yang di-scroll horizontal (mis. testimoni). */
+.scrollbar-hidden {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.scrollbar-hidden::-webkit-scrollbar {
+    display: none;
+}
