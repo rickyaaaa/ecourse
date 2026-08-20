@@ -238,7 +238,7 @@
                             <tr>
                                 <td>
                                     <div class="d-flex align-items-center gap-3">
-                                        <span class="w-40-px h-40-px flex-shrink-0 d-flex justify-content-center align-items-center radius-8 bg-gradient-to-br {{ $course['thumbnail_color'] }} text-white">
+                                        <span class="w-40-px h-40-px flex-shrink-0 d-flex justify-content-center align-items-center radius-8 bg-primary-50 text-lg">
                                             {{ $course['thumbnail_icon'] }}
                                         </span>
                                         <span class="fw-medium text-secondary-light">{{ $course['title'] }}</span>

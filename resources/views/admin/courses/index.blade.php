@@ -77,213 +77,169 @@
         @endif
     "
 >
-    <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+    <div class="d-flex flex-column flex-sm-row justify-content-sm-between align-items-sm-center gap-3 mb-24">
         <div>
-            <h2 class="text-lg font-semibold text-gray-900">Daftar Kursus</h2>
-            <p class="mt-1 text-sm text-gray-500">Kelola kursus yang tampil di katalog publik.</p>
+            <h5 class="fw-bold mb-1">Daftar Kursus</h5>
+            <p class="text-secondary-light mb-0">Kelola kursus yang tampil di katalog publik.</p>
         </div>
-        <button
-            @click="openCreateModal()"
-            class="inline-flex items-center justify-center gap-1 rounded-md bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-indigo-500"
-        >
-            + Tambah Kursus
+        <button @click="openCreateModal()" class="btn btn-primary-600 radius-8 d-flex align-items-center gap-1 px-16 py-8">
+            <i class="ri-add-line"></i> Tambah Kursus
         </button>
     </div>
 
-    <div class="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center">
-        <label class="relative flex-1">
-            <span class="sr-only">Cari kursus</span>
-            <span class="pointer-events-none absolute inset-y-0 left-3 flex items-center text-gray-400">🔎</span>
-            <input
-                type="search"
-                x-model="search"
-                placeholder="Cari judul kursus..."
-                class="w-full rounded-md border border-gray-300 py-2 pl-9 pr-4 text-sm text-gray-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-            >
-        </label>
+    <div class="card radius-8 border mb-24">
+        <div class="card-body p-24">
+            <div class="row gy-3 mb-24">
+                <div class="col-md-5">
+                    <label class="visually-hidden">Cari kursus</label>
+                    <div class="position-relative">
+                        <input type="search" x-model="search" placeholder="Cari judul kursus..." class="form-control radius-8 ps-40">
+                        <i class="ri-search-line position-absolute top-50 start-0 translate-middle-y ms-16 text-secondary-light"></i>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <select x-model="categoryFilter" class="form-select radius-8">
+                        <option value="">Semua Kategori</option>
+                        @foreach ($categories as $category)
+                            <option value="{{ $category['name'] }}">{{ $category['name'] }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <select x-model="statusFilter" class="form-select radius-8">
+                        <option value="">Semua Status</option>
+                        <option value="published">Diterbitkan</option>
+                        <option value="draft">Draf</option>
+                    </select>
+                </div>
+            </div>
 
-        <select
-            x-model="categoryFilter"
-            class="rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:w-52"
-        >
-            <option value="">Semua Kategori</option>
-            @foreach ($categories as $category)
-                <option value="{{ $category['name'] }}">{{ $category['name'] }}</option>
-            @endforeach
-        </select>
+            <div class="table-responsive scroll-sm">
+                <table class="table bordered-table mb-0">
+                    <thead>
+                        <tr>
+                            <th scope="col">Kursus</th>
+                            <th scope="col">Kategori</th>
+                            <th scope="col">Level</th>
+                            <th scope="col">Modul / Pelajaran</th>
+                            <th scope="col">Peserta</th>
+                            <th scope="col">Status</th>
+                            <th scope="col" class="text-center">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <template x-for="course in filteredCourses" :key="course.id">
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center gap-3">
+                                        <span class="w-36-px h-36-px flex-shrink-0 d-flex justify-content-center align-items-center radius-8 bg-primary-50 text-lg" x-text="course.thumbnail_icon"></span>
+                                        <span class="fw-medium text-secondary-light" x-text="course.title"></span>
+                                    </div>
+                                </td>
+                                <td class="text-secondary-light" x-text="course.category"></td>
+                                <td class="text-secondary-light" x-text="course.level"></td>
+                                <td class="text-secondary-light">
+                                    <span x-text="course.modules_count"></span> modul · <span x-text="course.lessons_count"></span> pelajaran
+                                </td>
+                                <td class="text-secondary-light" x-text="course.students_count.toLocaleString('id-ID')"></td>
+                                <td>
+                                    <span
+                                        class="border px-12 py-2 radius-4 fw-medium text-sm"
+                                        :class="course.is_published ? 'bg-success-focus text-success-600 border-success-main' : 'bg-neutral-200 text-neutral-600 border-neutral-400'"
+                                        x-text="course.is_published ? 'Diterbitkan' : 'Draf'"
+                                    ></span>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center gap-8 justify-content-center">
+                                        <button type="button" @click="openEditModal(course)" class="bg-success-focus bg-hover-success-200 text-success-600 fw-medium w-32-px h-32-px d-flex justify-content-center align-items-center rounded-circle" aria-label="Ubah kursus">
+                                            <i class="ri-edit-line"></i>
+                                        </button>
+                                        <button type="button" @click="deleteCourse(course)" class="bg-danger-focus bg-hover-danger-200 text-danger-600 fw-medium w-32-px h-32-px d-flex justify-content-center align-items-center rounded-circle" aria-label="Hapus kursus">
+                                            <i class="ri-delete-bin-line"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </template>
 
-        <select
-            x-model="statusFilter"
-            class="rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:w-44"
-        >
-            <option value="">Semua Status</option>
-            <option value="published">Diterbitkan</option>
-            <option value="draft">Draf</option>
-        </select>
-    </div>
-
-    <div class="overflow-x-auto rounded-xl border border-gray-200 bg-white">
-        <table class="min-w-full divide-y divide-gray-200 text-sm">
-            <thead class="bg-gray-50">
-                <tr class="text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                    <th class="px-4 py-3">Kursus</th>
-                    <th class="px-4 py-3">Kategori</th>
-                    <th class="px-4 py-3">Level</th>
-                    <th class="px-4 py-3">Modul / Pelajaran</th>
-                    <th class="px-4 py-3">Peserta</th>
-                    <th class="px-4 py-3">Status</th>
-                    <th class="px-4 py-3 text-right">Aksi</th>
-                </tr>
-            </thead>
-            <tbody class="divide-y divide-gray-100">
-                <template x-for="course in filteredCourses" :key="course.id">
-                    <tr class="hover:bg-gray-50">
-                        <td class="px-4 py-3">
-                            <div class="flex items-center gap-3">
-                                <span
-                                    class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br text-base"
-                                    :class="course.thumbnail_color"
-                                    x-text="course.thumbnail_icon"
-                                ></span>
-                                <span class="font-medium text-gray-900" x-text="course.title"></span>
-                            </div>
-                        </td>
-                        <td class="px-4 py-3 text-gray-600" x-text="course.category"></td>
-                        <td class="px-4 py-3 text-gray-600" x-text="course.level"></td>
-                        <td class="px-4 py-3 text-gray-600">
-                            <span x-text="course.modules_count"></span> modul ·
-                            <span x-text="course.lessons_count"></span> pelajaran
-                        </td>
-                        <td class="px-4 py-3 text-gray-600" x-text="course.students_count.toLocaleString('id-ID')"></td>
-                        <td class="px-4 py-3">
-                            <span
-                                class="inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium"
-                                :class="course.is_published ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'"
-                                x-text="course.is_published ? 'Diterbitkan' : 'Draf'"
-                            ></span>
-                        </td>
-                        <td class="px-4 py-3 text-right">
-                            <button @click="openEditModal(course)" class="font-medium text-indigo-600 hover:underline">Ubah</button>
-                            <span class="mx-1 text-gray-300">|</span>
-                            <button @click="deleteCourse(course)" class="font-medium text-red-600 hover:underline">Hapus</button>
-                        </td>
-                    </tr>
-                </template>
-
-                <tr x-show="filteredCourses.length === 0" x-cloak>
-                    <td colspan="7" class="px-4 py-10 text-center text-gray-500">
-                        Tidak ada kursus yang cocok dengan pencarian atau filter kamu.
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+                        <tr x-show="filteredCourses.length === 0" x-cloak>
+                            <td colspan="7" class="text-center text-secondary-light py-40">
+                                Tidak ada kursus yang cocok dengan pencarian atau filter kamu.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 
     {{-- Modal tambah/ubah kursus --}}
-    <div
-        x-show="showModal"
-        x-cloak
-        class="fixed inset-0 z-50 flex items-center justify-center px-4"
-    >
-        <div @click="showModal = false" class="fixed inset-0 bg-gray-900/50"></div>
+    <div x-show="showModal" x-cloak class="position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center p-16" style="z-index:1050;">
+        <div @click="showModal = false" class="position-fixed top-0 start-0 w-100 h-100 bg-dark" style="opacity:.5;"></div>
 
-        <div class="relative w-full max-w-lg rounded-xl bg-white p-6 shadow-lg">
-            <h3 class="text-lg font-semibold text-gray-900" x-text="editingId === null ? 'Tambah Kursus' : 'Ubah Kursus'"></h3>
+        <div class="position-relative bg-white radius-8 shadow w-100 p-24" style="max-width:560px;max-height:90vh;overflow-y:auto;">
+            <h6 class="fw-bold mb-16" x-text="editingId === null ? 'Tambah Kursus' : 'Ubah Kursus'"></h6>
 
             <form
                 method="POST"
                 :action="editingId === null ? '{{ route('admin.courses.store') }}' : '{{ url('/admin/kursus') }}/' + editingId"
-                class="mt-4 space-y-4"
+                class="d-flex flex-column gap-16"
             >
                 @csrf
                 <input type="hidden" name="_method" :value="editingId === null ? 'POST' : 'PUT'">
                 <input type="hidden" name="_editing_id" :value="editingId">
 
                 <div>
-                    <label for="course_title" class="block text-sm font-medium text-gray-700">Judul Kursus</label>
-                    <input
-                        type="text"
-                        id="course_title"
-                        name="title"
-                        x-model="form.title"
-                        required
-                        class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                    >
+                    <label for="course_title" class="form-label fw-medium">Judul Kursus</label>
+                    <input type="text" id="course_title" name="title" x-model="form.title" required class="form-control radius-8">
                     @error('title')
-                        <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                        <p class="text-danger-600 text-sm mt-4 mb-0">{{ $message }}</p>
                     @enderror
                 </div>
 
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label for="course_category" class="block text-sm font-medium text-gray-700">Kategori</label>
-                        <select
-                            id="course_category"
-                            name="category_id"
-                            x-model="form.category_id"
-                            class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                        >
+                <div class="row g-3">
+                    <div class="col-6">
+                        <label for="course_category" class="form-label fw-medium">Kategori</label>
+                        <select id="course_category" name="category_id" x-model="form.category_id" class="form-select radius-8">
                             @foreach ($categories as $category)
                                 <option value="{{ $category['id'] }}">{{ $category['name'] }}</option>
                             @endforeach
                         </select>
                         @error('category_id')
-                            <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                            <p class="text-danger-600 text-sm mt-4 mb-0">{{ $message }}</p>
                         @enderror
                     </div>
 
-                    <div>
-                        <label for="course_level" class="block text-sm font-medium text-gray-700">Level</label>
-                        <select
-                            id="course_level"
-                            name="level"
-                            x-model="form.level"
-                            class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                        >
+                    <div class="col-6">
+                        <label for="course_level" class="form-label fw-medium">Level</label>
+                        <select id="course_level" name="level" x-model="form.level" class="form-select radius-8">
                             <option value="Pemula">Pemula</option>
                             <option value="Menengah">Menengah</option>
                             <option value="Lanjutan">Lanjutan</option>
                             <option value="Semua Level">Semua Level</option>
                         </select>
                         @error('level')
-                            <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                            <p class="text-danger-600 text-sm mt-4 mb-0">{{ $message }}</p>
                         @enderror
                     </div>
                 </div>
 
                 <div>
-                    <label for="course_description" class="block text-sm font-medium text-gray-700">Deskripsi</label>
-                    <textarea
-                        id="course_description"
-                        name="description"
-                        x-model="form.description"
-                        rows="3"
-                        class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                    ></textarea>
+                    <label for="course_description" class="form-label fw-medium">Deskripsi</label>
+                    <textarea id="course_description" name="description" x-model="form.description" rows="3" class="form-control radius-8"></textarea>
                     @error('description')
-                        <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                        <p class="text-danger-600 text-sm mt-4 mb-0">{{ $message }}</p>
                     @enderror
                 </div>
 
-                <label class="flex items-center gap-2 text-sm text-gray-700">
-                    <input type="checkbox" name="is_published" value="1" x-model="form.is_published" class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
-                    Terbitkan kursus ini
-                </label>
+                <div class="form-check d-flex align-items-center gap-2">
+                    <input type="checkbox" id="course_is_published" name="is_published" value="1" x-model="form.is_published" class="form-check-input">
+                    <label for="course_is_published" class="form-check-label text-secondary-light">Terbitkan kursus ini</label>
+                </div>
 
-                <div class="flex justify-end gap-3 pt-2">
-                    <button
-                        type="button"
-                        @click="showModal = false"
-                        class="rounded-md border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
-                    >
-                        Batal
-                    </button>
-                    <button
-                        type="submit"
-                        class="rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-500"
-                    >
-                        Simpan
-                    </button>
+                <div class="d-flex justify-content-end gap-3 pt-2">
+                    <button type="button" @click="showModal = false" class="btn btn-outline-secondary radius-8 px-16 py-8">Batal</button>
+                    <button type="submit" class="btn btn-primary-600 radius-8 px-16 py-8">Simpan</button>
                 </div>
             </form>
         </div>

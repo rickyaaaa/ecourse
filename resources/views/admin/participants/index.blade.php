@@ -55,160 +55,139 @@
     }"
     x-init="@if ($errors->any()) showModal = true; @endif"
 >
-    <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+    <div class="d-flex flex-column flex-sm-row justify-content-sm-between align-items-sm-center gap-3 mb-24">
         <div>
-            <h2 class="text-lg font-semibold text-gray-900">Daftar Peserta</h2>
-            <p class="mt-1 text-sm text-gray-500">Kelola akun pelajar yang terdaftar di platform.</p>
+            <h5 class="fw-bold mb-1">Daftar Peserta</h5>
+            <p class="text-secondary-light mb-0">Kelola akun pelajar yang terdaftar di platform.</p>
         </div>
-        <button
-            @click="openCreateModal()"
-            class="inline-flex items-center justify-center gap-1 rounded-md bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-indigo-500"
-        >
-            + Tambah Peserta
+        <button @click="openCreateModal()" class="btn btn-primary-600 radius-8 d-flex align-items-center gap-1 px-16 py-8">
+            <i class="ri-add-line"></i> Tambah Peserta
         </button>
     </div>
 
-    <div class="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center">
-        <label class="relative flex-1">
-            <span class="sr-only">Cari peserta</span>
-            <span class="pointer-events-none absolute inset-y-0 left-3 flex items-center text-gray-400">🔎</span>
-            <input
-                type="search"
-                x-model="search"
-                placeholder="Cari nama atau email peserta..."
-                class="w-full rounded-md border border-gray-300 py-2 pl-9 pr-4 text-sm text-gray-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-            >
-        </label>
+    <div class="card radius-8 border">
+        <div class="card-body p-24">
+            <div class="row gy-3 mb-24">
+                <div class="col-md-8">
+                    <div class="position-relative">
+                        <input type="search" x-model="search" placeholder="Cari nama atau email peserta..." class="form-control radius-8 ps-40">
+                        <i class="ri-search-line position-absolute top-50 start-0 translate-middle-y ms-16 text-secondary-light"></i>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <select x-model="statusFilter" class="form-select radius-8">
+                        <option value="">Semua Status</option>
+                        <option value="active">Aktif</option>
+                        <option value="inactive">Nonaktif</option>
+                    </select>
+                </div>
+            </div>
 
-        <select
-            x-model="statusFilter"
-            class="rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:w-44"
-        >
-            <option value="">Semua Status</option>
-            <option value="active">Aktif</option>
-            <option value="inactive">Nonaktif</option>
-        </select>
-    </div>
+            <div class="table-responsive scroll-sm">
+                <table class="table bordered-table mb-0">
+                    <thead>
+                        <tr>
+                            <th scope="col">Nama</th>
+                            <th scope="col">Email</th>
+                            <th scope="col">Bergabung</th>
+                            <th scope="col">Kursus Diikuti</th>
+                            <th scope="col">Kursus Selesai</th>
+                            <th scope="col">Status</th>
+                            <th scope="col" class="text-center">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <template x-for="participant in filteredParticipants" :key="participant.id">
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <span class="w-32-px h-32-px flex-shrink-0 d-flex justify-content-center align-items-center rounded-circle bg-primary-600 text-white fw-semibold text-sm" x-text="participant.name.charAt(0).toUpperCase()"></span>
+                                        <span class="fw-medium text-secondary-light" x-text="participant.name"></span>
+                                    </div>
+                                </td>
+                                <td class="text-secondary-light" x-text="participant.email"></td>
+                                <td class="text-secondary-light" x-text="participant.joined_at"></td>
+                                <td class="text-secondary-light" x-text="participant.courses_enrolled"></td>
+                                <td class="text-secondary-light" x-text="participant.courses_completed"></td>
+                                <td>
+                                    <span
+                                        class="border px-12 py-2 radius-4 fw-medium text-sm"
+                                        :class="participant.is_active ? 'bg-success-focus text-success-600 border-success-main' : 'bg-neutral-200 text-neutral-600 border-neutral-400'"
+                                        x-text="participant.is_active ? 'Aktif' : 'Nonaktif'"
+                                    ></span>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center gap-8 justify-content-center">
+                                        <button
+                                            type="button"
+                                            @click="toggleStatus(participant)"
+                                            class="bg-hover-warning-200 fw-medium w-32-px h-32-px d-flex justify-content-center align-items-center rounded-circle"
+                                            :class="participant.is_active ? 'bg-warning-focus text-warning-600' : 'bg-success-focus text-success-600'"
+                                            :aria-label="participant.is_active ? 'Nonaktifkan' : 'Aktifkan'"
+                                        >
+                                            <i :class="participant.is_active ? 'ri-forbid-line' : 'ri-checkbox-circle-line'"></i>
+                                        </button>
+                                        <button type="button" @click="deleteParticipant(participant)" class="bg-danger-focus bg-hover-danger-200 text-danger-600 fw-medium w-32-px h-32-px d-flex justify-content-center align-items-center rounded-circle" aria-label="Hapus peserta">
+                                            <i class="ri-delete-bin-line"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </template>
 
-    <div class="overflow-x-auto rounded-xl border border-gray-200 bg-white">
-        <table class="min-w-full divide-y divide-gray-200 text-sm">
-            <thead class="bg-gray-50">
-                <tr class="text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                    <th class="px-4 py-3">Nama</th>
-                    <th class="px-4 py-3">Email</th>
-                    <th class="px-4 py-3">Bergabung</th>
-                    <th class="px-4 py-3">Kursus Diikuti</th>
-                    <th class="px-4 py-3">Kursus Selesai</th>
-                    <th class="px-4 py-3">Status</th>
-                    <th class="px-4 py-3 text-right">Aksi</th>
-                </tr>
-            </thead>
-            <tbody class="divide-y divide-gray-100">
-                <template x-for="participant in filteredParticipants" :key="participant.id">
-                    <tr class="hover:bg-gray-50">
-                        <td class="px-4 py-3 font-medium text-gray-900" x-text="participant.name"></td>
-                        <td class="px-4 py-3 text-gray-600" x-text="participant.email"></td>
-                        <td class="px-4 py-3 text-gray-600" x-text="participant.joined_at"></td>
-                        <td class="px-4 py-3 text-gray-600" x-text="participant.courses_enrolled"></td>
-                        <td class="px-4 py-3 text-gray-600" x-text="participant.courses_completed"></td>
-                        <td class="px-4 py-3">
-                            <span
-                                class="inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium"
-                                :class="participant.is_active ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'"
-                                x-text="participant.is_active ? 'Aktif' : 'Nonaktif'"
-                            ></span>
-                        </td>
-                        <td class="px-4 py-3 text-right">
-                            <button @click="toggleStatus(participant)" class="font-medium text-indigo-600 hover:underline">
-                                <span x-text="participant.is_active ? 'Nonaktifkan' : 'Aktifkan'"></span>
-                            </button>
-                            <span class="mx-1 text-gray-300">|</span>
-                            <button @click="deleteParticipant(participant)" class="font-medium text-red-600 hover:underline">Hapus</button>
-                        </td>
-                    </tr>
-                </template>
-
-                <tr x-show="filteredParticipants.length === 0" x-cloak>
-                    <td colspan="7" class="px-4 py-10 text-center text-gray-500">
-                        Tidak ada peserta yang cocok dengan pencarian atau filter kamu.
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+                        <tr x-show="filteredParticipants.length === 0" x-cloak>
+                            <td colspan="7" class="text-center text-secondary-light py-40">
+                                Tidak ada peserta yang cocok dengan pencarian atau filter kamu.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 
     {{-- Modal tambah peserta --}}
-    <div x-show="showModal" x-cloak class="fixed inset-0 z-50 flex items-center justify-center px-4">
-        <div @click="showModal = false" class="fixed inset-0 bg-gray-900/50"></div>
+    <div x-show="showModal" x-cloak class="position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center p-16" style="z-index:1050;">
+        <div @click="showModal = false" class="position-fixed top-0 start-0 w-100 h-100 bg-dark" style="opacity:.5;"></div>
 
-        <div class="relative w-full max-w-md rounded-xl bg-white p-6 shadow-lg">
-            <h3 class="text-lg font-semibold text-gray-900">Tambah Peserta</h3>
+        <div class="position-relative bg-white radius-8 shadow w-100 p-24" style="max-width:480px;">
+            <h6 class="fw-bold mb-16">Tambah Peserta</h6>
 
-            <form method="POST" action="{{ route('admin.participants.store') }}" class="mt-4 space-y-4">
+            <form method="POST" action="{{ route('admin.participants.store') }}" class="d-flex flex-column gap-16">
                 @csrf
 
                 <div>
-                    <label for="participant_name" class="block text-sm font-medium text-gray-700">Nama</label>
-                    <input
-                        type="text"
-                        id="participant_name"
-                        name="name"
-                        value="{{ old('name') }}"
-                        required
-                        class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                    >
+                    <label for="participant_name" class="form-label fw-medium">Nama</label>
+                    <input type="text" id="participant_name" name="name" value="{{ old('name') }}" required class="form-control radius-8">
                     @error('name')
-                        <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                        <p class="text-danger-600 text-sm mt-4 mb-0">{{ $message }}</p>
                     @enderror
                 </div>
 
                 <div>
-                    <label for="participant_email" class="block text-sm font-medium text-gray-700">Email</label>
-                    <input
-                        type="email"
-                        id="participant_email"
-                        name="email"
-                        value="{{ old('email') }}"
-                        required
-                        class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                    >
+                    <label for="participant_email" class="form-label fw-medium">Email</label>
+                    <input type="email" id="participant_email" name="email" value="{{ old('email') }}" required class="form-control radius-8">
                     @error('email')
-                        <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                        <p class="text-danger-600 text-sm mt-4 mb-0">{{ $message }}</p>
                     @enderror
                 </div>
 
                 <div>
-                    <label for="participant_password" class="block text-sm font-medium text-gray-700">Kata Sandi</label>
-                    <input
-                        type="password"
-                        id="participant_password"
-                        name="password"
-                        required
-                        class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                    >
+                    <label for="participant_password" class="form-label fw-medium">Kata Sandi</label>
+                    <input type="password" id="participant_password" name="password" required class="form-control radius-8">
                     @error('password')
-                        <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                        <p class="text-danger-600 text-sm mt-4 mb-0">{{ $message }}</p>
                     @enderror
                 </div>
 
                 <div>
-                    <label for="participant_password_confirmation" class="block text-sm font-medium text-gray-700">Konfirmasi Kata Sandi</label>
-                    <input
-                        type="password"
-                        id="participant_password_confirmation"
-                        name="password_confirmation"
-                        required
-                        class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                    >
+                    <label for="participant_password_confirmation" class="form-label fw-medium">Konfirmasi Kata Sandi</label>
+                    <input type="password" id="participant_password_confirmation" name="password_confirmation" required class="form-control radius-8">
                 </div>
 
-                <div class="flex justify-end gap-3 pt-2">
-                    <button type="button" @click="showModal = false" class="rounded-md border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">
-                        Batal
-                    </button>
-                    <button type="submit" class="rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-500">
-                        Simpan
-                    </button>
+                <div class="d-flex justify-content-end gap-3 pt-2">
+                    <button type="button" @click="showModal = false" class="btn btn-outline-secondary radius-8 px-16 py-8">Batal</button>
+                    <button type="submit" class="btn btn-primary-600 radius-8 px-16 py-8">Simpan</button>
                 </div>
             </form>
         </div>
