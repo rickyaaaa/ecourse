@@ -6,9 +6,11 @@ use App\Http\Controllers\Controller;
 use App\Models\Course;
 use App\Models\Enrollment;
 use App\Models\Quiz;
+use App\Models\QuizAttempt;
 use App\Models\User;
 use App\Support\CoursePresentation;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Dasbor panel admin: ringkasan + tren dari data sungguhan (bukan angka
@@ -41,10 +43,12 @@ class DashboardController extends Controller
                 'enrollments_trend' => $this->percentTrend($enrollmentsLastWeek, $enrollmentsThisWeek),
                 'completed_enrollments' => Enrollment::where('status', 'completed')->count(),
                 'quizzes' => Quiz::count(),
+                'average_progress' => $this->averageProgress(),
             ],
             'registrationChart' => $this->registrationChartData(),
             'topCourses' => $this->topCourses(),
-            'recentParticipants' => $this->recentParticipants(),
+            'recentEnrollments' => $this->recentEnrollments(),
+            'recentActivity' => $this->recentActivity(),
         ]);
     }
 
@@ -64,6 +68,41 @@ class DashboardController extends Controller
             'direction' => $change >= 0 ? 'up' : 'down',
             'value' => abs($change),
         ];
+    }
+
+    /**
+     * Rata-rata progres semua pendaftaran (persentase pelajaran selesai
+     * dibanding total pelajaran di kursus masing-masing). Kursus tanpa
+     * pelajaran diabaikan (tidak ada progres yang bisa dihitung).
+     */
+    private function averageProgress(): ?float
+    {
+        $lessonCounts = Course::withCount('lessons')->get()->pluck('lessons_count', 'id');
+
+        $completedCounts = DB::table('lesson_progress')
+            ->join('lessons', 'lessons.id', '=', 'lesson_progress.lesson_id')
+            ->join('modules', 'modules.id', '=', 'lessons.module_id')
+            ->where('lesson_progress.is_completed', true)
+            ->selectRaw('lesson_progress.user_id, modules.course_id, count(*) as completed')
+            ->groupBy('lesson_progress.user_id', 'modules.course_id')
+            ->get()
+            ->keyBy(fn ($row) => $row->user_id.'-'.$row->course_id);
+
+        $percentages = Enrollment::all()
+            ->map(function (Enrollment $enrollment) use ($lessonCounts, $completedCounts) {
+                $total = $lessonCounts->get($enrollment->course_id, 0);
+
+                if ($total === 0) {
+                    return null;
+                }
+
+                $completed = $completedCounts->get($enrollment->user_id.'-'.$enrollment->course_id)->completed ?? 0;
+
+                return min(100, ($completed / $total) * 100);
+            })
+            ->filter(fn ($value) => $value !== null);
+
+        return $percentages->isEmpty() ? null : round($percentages->avg(), 1);
     }
 
     /**
@@ -112,22 +151,68 @@ class DashboardController extends Controller
             ]);
     }
 
-    private function recentParticipants()
+    /**
+     * 8 pendaftaran kursus (enrollment) terbaru, untuk tabel "Enrollment
+     * Terbaru" di dasbor.
+     */
+    private function recentEnrollments()
     {
-        return User::query()
-            ->where('role', 'pelajar')
-            ->withCount('enrollments')
-            ->with(['enrollments' => fn ($query) => $query->latest()->with('course:id,title')->limit(1)])
+        return Enrollment::query()
+            ->with(['user:id,name,email', 'course:id,title'])
+            ->latest()
+            ->limit(8)
+            ->get()
+            ->map(fn (Enrollment $enrollment) => [
+                'participant' => $enrollment->user?->name,
+                'course' => $enrollment->course?->title,
+                'date' => $enrollment->created_at,
+                'status' => $enrollment->status,
+            ]);
+    }
+
+    /**
+     * Gabungan 3 jenis aktivitas terbaru (pendaftaran akun, pendaftaran
+     * kursus, percobaan kuis) diurutkan waktu terbaru — bukan tabel/model
+     * "activity log" tersendiri, cuma dirangkai dari data yang sudah ada.
+     */
+    private function recentActivity()
+    {
+        $registrations = User::where('role', 'pelajar')
             ->latest()
             ->limit(5)
             ->get()
             ->map(fn (User $user) => [
-                'id' => $user->id,
-                'name' => $user->name,
-                'email' => $user->email,
-                'joined_at' => $user->created_at,
-                'courses_enrolled' => $user->enrollments_count,
-                'latest_course' => $user->enrollments->first()?->course?->title,
+                'type' => 'registration',
+                'label' => "{$user->name} mendaftar sebagai peserta baru",
+                'at' => $user->created_at,
             ]);
+
+        $enrollments = Enrollment::with(['user:id,name', 'course:id,title'])
+            ->latest()
+            ->limit(5)
+            ->get()
+            ->map(fn (Enrollment $enrollment) => [
+                'type' => 'enrollment',
+                'label' => "{$enrollment->user?->name} mengikuti kursus {$enrollment->course?->title}",
+                'at' => $enrollment->created_at,
+            ]);
+
+        $quizAttempts = QuizAttempt::with(['user:id,name', 'quiz:id,title'])
+            ->whereNotNull('finished_at')
+            ->latest('finished_at')
+            ->limit(5)
+            ->get()
+            ->map(fn (QuizAttempt $attempt) => [
+                'type' => 'quiz',
+                'label' => "{$attempt->user?->name} menyelesaikan {$attempt->quiz?->title} (skor {$attempt->score})",
+                'at' => $attempt->finished_at,
+            ]);
+
+        return $registrations
+            ->concat($enrollments)
+            ->concat($quizAttempts)
+            ->sortByDesc('at')
+            ->take(8)
+            ->values();
     }
 }

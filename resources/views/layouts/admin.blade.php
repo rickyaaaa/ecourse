@@ -1,136 +1,176 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" data-theme="light">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Panel Admin — Platform Kursus Online')</title>
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-
-    @vite(['resources/css/app.css', 'resources/js/admin.js'])
+    <link rel="stylesheet" href="{{ asset('admin/assets/css/remixicon.css') }}">
+    <link rel="stylesheet" href="{{ asset('admin/assets/css/lib/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('admin/assets/css/lib/apexcharts.css') }}">
+    <link rel="stylesheet" href="{{ asset('admin/assets/css/style.css') }}">
 </head>
-<body
-    class="min-h-screen bg-admin-muted font-admin text-admin-foreground antialiased"
-    x-data="{ sidebarOpen: false }"
->
-    {{-- Overlay mobile --}}
-    <div
-        x-show="sidebarOpen"
-        x-cloak
-        @click="sidebarOpen = false"
-        class="fixed inset-0 z-40 bg-black/50 lg:hidden"
-    ></div>
+<body>
+    <aside class="sidebar">
+        <button type="button" class="sidebar-close-btn">
+            <i class="ri-close-line"></i>
+        </button>
+        <div>
+            <a href="{{ route('admin.dashboard') }}" class="sidebar-logo d-flex align-items-center gap-2">
+                <span class="d-flex justify-content-center align-items-center rounded-circle bg-primary-600 text-white flex-shrink-0" style="width:36px;height:36px;font-size:18px;">
+                    <i class="ri-graduation-cap-fill"></i>
+                </span>
+                <span class="fw-bold text-lg">Platform Kursus</span>
+            </a>
+        </div>
+        <div class="sidebar-menu-area">
+            <ul class="sidebar-menu" id="sidebar-menu">
+                @php
+                    $adminNavItems = [
+                        ['route' => 'admin.dashboard', 'label' => 'Dasbor', 'icon' => 'ri-dashboard-3-line'],
+                        ['route' => 'admin.courses.index', 'label' => 'Kursus', 'icon' => 'ri-book-open-line'],
+                        ['route' => 'admin.modules.index', 'label' => 'Materi & Pelajaran', 'icon' => 'ri-stack-line'],
+                        ['route' => 'admin.quizzes.index', 'label' => 'Kuis', 'icon' => 'ri-file-list-3-line'],
+                        ['route' => 'admin.participants.index', 'label' => 'Peserta', 'icon' => 'ri-team-line'],
+                    ];
+                @endphp
 
-    <div class="flex min-h-screen">
-        <aside
-            class="fixed inset-y-0 left-0 z-50 flex w-[280px] shrink-0 -translate-x-full transform flex-col overflow-hidden border-r border-admin-border bg-white transition-transform duration-300 lg:translate-x-0"
-            :class="sidebarOpen && '!translate-x-0'"
-        >
-            <div class="flex h-[90px] shrink-0 items-center justify-between gap-3 border-b border-admin-border px-5">
-                <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-3">
-                    <span class="flex h-9 w-11 shrink-0 items-center justify-center rounded-xl bg-admin-primary">
-                        <i data-lucide="graduation-cap" class="h-5 w-5 text-white"></i>
-                    </span>
-                    <span class="text-lg font-semibold">Platform Kursus</span>
-                </a>
-                <button
-                    @click="sidebarOpen = false"
-                    aria-label="Tutup menu"
-                    class="flex size-10 shrink-0 items-center justify-center rounded-xl ring-1 ring-admin-border hover:ring-admin-primary transition-all lg:hidden"
-                >
-                    <i data-lucide="x" class="size-5 text-admin-secondary"></i>
-                </button>
-            </div>
+                @foreach ($adminNavItems as $item)
+                    <li>
+                        <a href="{{ route($item['route']) }}" class="{{ request()->routeIs($item['route']) ? 'active-page' : '' }}">
+                            <i class="{{ $item['icon'] }} menu-icon"></i>
+                            <span>{{ $item['label'] }}</span>
+                        </a>
+                    </li>
+                @endforeach
 
-            <nav class="flex flex-1 flex-col gap-6 overflow-y-auto p-5 pb-6">
-                <div class="flex flex-col gap-3">
-                    <h3 class="text-sm font-medium text-admin-secondary">Menu Utama</h3>
-                    <div class="flex flex-col gap-1">
-                        @php
-                            $adminNavItems = [
-                                ['route' => 'admin.dashboard', 'label' => 'Dasbor', 'icon' => 'layout-dashboard'],
-                                ['route' => 'admin.courses.index', 'label' => 'Kelola Kursus', 'icon' => 'book-open'],
-                                ['route' => 'admin.modules.index', 'label' => 'Kelola Materi', 'icon' => 'layers'],
-                                ['route' => 'admin.quizzes.index', 'label' => 'Kelola Kuis', 'icon' => 'clipboard-list'],
-                                ['route' => 'admin.participants.index', 'label' => 'Kelola Peserta', 'icon' => 'users'],
-                            ];
-                        @endphp
-
-                        @foreach ($adminNavItems as $item)
-                            @php $isActive = request()->routeIs($item['route']); @endphp
-                            <a
-                                href="{{ route($item['route']) }}"
-                                class="flex items-center gap-3 rounded-xl p-3.5 text-sm font-medium transition-all {{ $isActive ? 'bg-admin-muted font-semibold text-admin-foreground' : 'text-admin-secondary hover:bg-admin-muted hover:text-admin-foreground' }}"
-                            >
-                                <i data-lucide="{{ $item['icon'] }}" class="size-5 shrink-0"></i>
-                                {{ $item['label'] }}
-                            </a>
-                        @endforeach
-                    </div>
-                </div>
-
-                <div class="mt-auto flex flex-col gap-1 border-t border-admin-border pt-5">
-                    <a href="{{ route('courses.index') }}" class="flex items-center gap-3 rounded-xl p-3.5 text-sm font-medium text-admin-secondary hover:bg-admin-muted hover:text-admin-foreground transition-all">
-                        <i data-lucide="arrow-left" class="size-5 shrink-0"></i>
-                        Kembali ke Situs
+                <li class="sidebar-menu-group-title">Lainnya</li>
+                <li>
+                    <a href="{{ route('courses.index') }}">
+                        <i class="ri-arrow-left-line menu-icon"></i>
+                        <span>Kembali ke Situs</span>
                     </a>
+                </li>
+                <li>
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
-                        <button type="submit" class="flex w-full items-center gap-3 rounded-xl p-3.5 text-left text-sm font-medium text-admin-secondary hover:bg-admin-error-light hover:text-admin-error-dark transition-all">
-                            <i data-lucide="log-out" class="size-5 shrink-0"></i>
-                            Keluar
+                        <button type="submit" class="w-100 text-start bg-transparent border-0 p-0">
+                            <i class="ri-logout-box-r-line menu-icon"></i>
+                            <span>Keluar</span>
                         </button>
                     </form>
-                </div>
-            </nav>
-        </aside>
+                </li>
+            </ul>
+        </div>
+    </aside>
 
-        <div class="flex min-w-0 flex-1 flex-col lg:ml-[280px]">
-            <header class="flex h-[90px] shrink-0 items-center justify-between gap-3 border-b border-admin-border bg-white px-4 sm:px-6">
-                <button
-                    @click="sidebarOpen = true"
-                    aria-label="Buka menu"
-                    class="flex size-11 items-center justify-center rounded-xl ring-1 ring-admin-border hover:ring-admin-primary transition-all lg:hidden"
-                >
-                    <i data-lucide="menu" class="size-6 text-admin-foreground"></i>
-                </button>
-
-                <h1 class="text-lg font-bold text-admin-foreground sm:text-xl">@yield('page-title', 'Panel Admin')</h1>
-
-                <div class="flex items-center gap-3 border-l border-admin-border pl-3">
-                    <span class="flex size-10 shrink-0 items-center justify-center rounded-full bg-admin-primary text-sm font-semibold text-white">
-                        {{ Str::of(auth()->user()->name)->substr(0, 1)->upper() }}
-                    </span>
-                    <div class="hidden text-right sm:block">
-                        <p class="text-sm font-semibold text-admin-foreground">{{ auth()->user()->name }}</p>
-                        <p class="text-xs text-admin-secondary">Admin</p>
+    <main class="dashboard-main">
+        <div class="navbar-header">
+            <div class="row align-items-center justify-content-between">
+                <div class="col-auto">
+                    <div class="d-flex flex-wrap align-items-center gap-4">
+                        <button type="button" class="sidebar-toggle">
+                            <i class="ri-menu-line icon text-2xl non-active"></i>
+                            <i class="ri-arrow-right-s-line icon text-2xl active"></i>
+                        </button>
+                        <button type="button" class="sidebar-mobile-toggle">
+                            <i class="ri-menu-line icon"></i>
+                        </button>
+                        <h6 class="fw-semibold mb-0">@yield('page-title', 'Panel Admin')</h6>
                     </div>
                 </div>
-            </header>
+                <div class="col-auto">
+                    <div class="d-flex flex-wrap align-items-center gap-3">
+                        {{-- Notifikasi: demo/visual saja, belum ada sistem notifikasi sungguhan --}}
+                        <div class="dropdown">
+                            <button
+                                class="w-40-px h-40-px bg-neutral-200 rounded-circle d-flex justify-content-center align-items-center"
+                                type="button" data-bs-toggle="dropdown"
+                            >
+                                <i class="ri-notification-3-line text-xl"></i>
+                            </button>
+                            <div class="dropdown-menu to-top dropdown-menu-sm p-16">
+                                <h6 class="text-md fw-semibold mb-8">Notifikasi</h6>
+                                <p class="text-sm text-secondary-light mb-0">Belum ada notifikasi baru.</p>
+                            </div>
+                        </div>
 
+                        <div class="dropdown">
+                            <button class="d-flex justify-content-center align-items-center rounded-circle" type="button" data-bs-toggle="dropdown">
+                                <span class="w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle bg-primary-600 text-white fw-semibold">
+                                    {{ Str::of(auth()->user()->name)->substr(0, 1)->upper() }}
+                                </span>
+                            </button>
+                            <div class="dropdown-menu to-top dropdown-menu-sm">
+                                <div class="py-12 px-16 radius-8 bg-primary-50 mb-16">
+                                    <h6 class="text-lg text-primary-light fw-semibold mb-2">{{ auth()->user()->name }}</h6>
+                                    <span class="text-secondary-light fw-medium text-sm">Admin</span>
+                                </div>
+                                <ul class="to-top-list">
+                                    <li>
+                                        <a class="dropdown-item text-black px-0 py-8 hover-bg-transparent hover-text-primary d-flex align-items-center gap-3" href="{{ route('profile.edit') }}">
+                                            <i class="ri-user-line icon text-xl"></i> Profil Saya
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <form method="POST" action="{{ route('logout') }}">
+                                            @csrf
+                                            <button type="submit" class="dropdown-item text-black px-0 py-8 hover-bg-transparent hover-text-danger d-flex align-items-center gap-3 w-100 border-0 bg-transparent">
+                                                <i class="ri-logout-box-r-line icon text-xl"></i> Keluar
+                                            </button>
+                                        </form>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-main-body">
             @if (session('notice'))
-                <div class="mx-4 mt-4 flex items-center gap-2 rounded-xl border border-admin-success/30 bg-admin-success-light px-4 py-3 text-sm text-admin-success-dark sm:mx-6">
-                    <i data-lucide="check-circle-2" class="size-4 shrink-0"></i>
+                <div class="alert alert-success alert-dismissible fade show radius-8 d-flex align-items-center gap-2" role="alert">
+                    <i class="ri-checkbox-circle-line"></i>
                     {{ session('notice') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Tutup"></button>
                 </div>
             @endif
 
             @if (session('error'))
-                <div class="mx-4 mt-4 flex items-center gap-2 rounded-xl border border-admin-error/30 bg-admin-error-light px-4 py-3 text-sm text-admin-error-dark sm:mx-6">
-                    <i data-lucide="alert-circle" class="size-4 shrink-0"></i>
+                <div class="alert alert-danger alert-dismissible fade show radius-8 d-flex align-items-center gap-2" role="alert">
+                    <i class="ri-error-warning-line"></i>
                     {{ session('error') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Tutup"></button>
                 </div>
             @endif
 
-            <main class="flex-1 bg-admin-muted px-4 py-6 sm:px-6 sm:py-8">
-                @yield('content')
-            </main>
+            @yield('content')
         </div>
-    </div>
 
+        <footer class="d-footer">
+            <div class="row align-items-center justify-content-between">
+                <div class="col-auto">
+                    <p class="mb-0">&copy; {{ date('Y') }} Platform Kursus Online.</p>
+                </div>
+            </div>
+        </footer>
+    </main>
+
+    <script src="{{ asset('admin/assets/js/lib/jquery-3.7.1.min.js') }}"></script>
+    <script src="{{ asset('admin/assets/js/lib/bootstrap.bundle.min.js') }}"></script>
+    <script src="{{ asset('admin/assets/js/lib/apexcharts.min.js') }}"></script>
+    <script src="{{ asset('admin/assets/js/app.js') }}"></script>
+    {{--
+        Alpine.js (via resources/js/app.js) dipertahankan sementara untuk
+        halaman Kelola Kursus/Materi/Kuis/Peserta yang masih pakai x-data
+        (belum dimigrasikan ke jQuery/Bootstrap WowDash — itu tugas
+        Phase 4-7). Hapus baris ini setelah semua halaman admin selesai
+        dimigrasikan dan tidak ada lagi atribut x-data/x-show/x-model di
+        resources/views/admin/**.
+    --}}
+    @vite(['resources/js/app.js'])
     @stack('scripts')
 </body>
 </html>

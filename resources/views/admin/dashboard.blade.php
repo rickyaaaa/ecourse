@@ -4,143 +4,255 @@
 @section('page-title', 'Dasbor')
 
 @section('content')
-<div class="mb-6 flex flex-col gap-4 md:mb-8 md:flex-row md:items-center md:justify-between">
+{{-- Quick actions --}}
+<div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-24">
     <div>
-        <h2 class="mb-1 text-2xl font-bold text-admin-foreground md:text-3xl">Ringkasan Platform</h2>
-        <p class="text-sm text-admin-secondary md:text-base">Halo, {{ auth()->user()->name }}! Ini kondisi platform hari ini.</p>
+        <h5 class="fw-bold mb-1">Halo, {{ auth()->user()->name }} 👋</h5>
+        <p class="text-secondary-light mb-0">Ini ringkasan platform kursus hari ini.</p>
     </div>
-    <div class="grid grid-cols-2 gap-2 md:flex md:w-auto md:items-center md:gap-3">
-        <a href="{{ route('admin.participants.index') }}" class="flex items-center justify-center gap-2 rounded-admin-button px-4 py-3 text-sm font-semibold text-admin-foreground ring-1 ring-admin-border transition-all hover:ring-admin-primary md:px-6">
-            <i data-lucide="user-plus" class="h-5 w-5"></i>
-            <span>Tambah Peserta</span>
+    <div class="d-flex flex-wrap gap-2">
+        <a href="{{ route('admin.courses.index') }}" class="btn btn-primary-600 radius-8 d-flex align-items-center gap-1 px-16 py-8">
+            <i class="ri-add-line"></i> Tambah Kursus
         </a>
-        <a href="{{ route('admin.courses.index') }}" class="flex items-center justify-center gap-2 rounded-admin-button bg-admin-primary px-4 py-3 text-sm font-bold text-white transition-all hover:bg-admin-primary-hover md:px-6">
-            <i data-lucide="plus" class="h-5 w-5"></i>
-            <span>Tambah Kursus</span>
+        <a href="{{ route('admin.modules.index') }}" class="btn btn-outline-primary-600 radius-8 d-flex align-items-center gap-1 px-16 py-8">
+            <i class="ri-add-line"></i> Tambah Materi
+        </a>
+        <a href="{{ route('admin.quizzes.index') }}" class="btn btn-outline-primary-600 radius-8 d-flex align-items-center gap-1 px-16 py-8">
+            <i class="ri-add-line"></i> Tambah Kuis
+        </a>
+        <a href="{{ route('admin.participants.index') }}" class="btn btn-outline-primary-600 radius-8 d-flex align-items-center gap-1 px-16 py-8">
+            <i class="ri-add-line"></i> Tambah Peserta
         </a>
     </div>
 </div>
 
-{{-- Stat cards --}}
-<div class="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 md:mb-8 md:gap-6 lg:grid-cols-4">
-    <div class="flex flex-col gap-3 rounded-admin-card border border-admin-border bg-white p-6">
-        <div class="flex items-center gap-2">
-            <div class="flex size-11 shrink-0 items-center justify-center rounded-admin-icon bg-admin-primary/10">
-                <i data-lucide="book-open" class="size-6 text-admin-primary"></i>
+{{-- Kartu statistik utama --}}
+<div class="row gy-4 mb-24">
+    <div class="col-xxl-4 col-md-6">
+        <div class="card p-3 radius-8 shadow-none border bg-gradient-dark-start-1 h-100">
+            <div class="card-body p-0">
+                <div class="d-flex align-items-center gap-2 mb-12">
+                    <span class="w-48-px h-48-px bg-base text-pink text-2xl flex-shrink-0 d-flex justify-content-center align-items-center rounded-circle">
+                        <i class="ri-team-fill"></i>
+                    </span>
+                    <span class="fw-medium text-secondary-light text-lg">Total Peserta</span>
+                </div>
+                <div class="d-flex align-items-center justify-content-between flex-wrap gap-8">
+                    <h5 class="fw-semibold mb-0">{{ number_format($stats['students'], 0, ',', '.') }}</h5>
+                    @if ($stats['students_trend'])
+                        <p class="text-sm mb-0 d-flex align-items-center gap-8">
+                            <span class="text-white px-1 rounded-2 fw-medium text-sm {{ $stats['students_trend']['direction'] === 'up' ? 'bg-success-main' : 'bg-danger-main' }}">
+                                {{ $stats['students_trend']['direction'] === 'up' ? '+' : '-' }}{{ $stats['students_trend']['value'] ?? '' }}{{ $stats['students_trend']['value'] !== null ? '%' : 'Baru' }}
+                            </span>
+                            7 hari terakhir
+                        </p>
+                    @endif
+                </div>
             </div>
-            <p class="font-medium text-admin-secondary">Total Kursus</p>
-        </div>
-        <div class="flex items-baseline gap-2">
-            <p class="text-[32px] font-bold leading-10">{{ $stats['courses'] }}</p>
-            <span class="text-sm text-admin-secondary">{{ $stats['published_courses'] }} diterbitkan</span>
         </div>
     </div>
 
-    <div class="flex flex-col gap-3 rounded-admin-card border border-admin-border bg-white p-6">
-        <div class="flex items-center gap-2">
-            <div class="flex size-11 shrink-0 items-center justify-center rounded-admin-icon bg-admin-info/10">
-                <i data-lucide="users" class="size-6 text-admin-info"></i>
+    <div class="col-xxl-4 col-md-6">
+        <div class="card p-3 radius-8 shadow-none border bg-gradient-dark-start-2 h-100">
+            <div class="card-body p-0">
+                <div class="d-flex align-items-center gap-2 mb-12">
+                    <span class="w-48-px h-48-px bg-base text-purple text-2xl flex-shrink-0 d-flex justify-content-center align-items-center rounded-circle">
+                        <i class="ri-book-open-fill"></i>
+                    </span>
+                    <span class="fw-medium text-secondary-light text-lg">Total Kursus</span>
+                </div>
+                <div class="d-flex align-items-center justify-content-between flex-wrap gap-8">
+                    <h5 class="fw-semibold mb-0">{{ $stats['courses'] }}</h5>
+                    <p class="text-sm mb-0 text-secondary-light">{{ $stats['published_courses'] }} aktif</p>
+                </div>
             </div>
-            <p class="font-medium text-admin-secondary">Total Peserta</p>
         </div>
-        <div class="flex items-center gap-3">
-            <p class="text-[32px] font-bold leading-10">{{ number_format($stats['students'], 0, ',', '.') }}</p>
-            @if ($stats['students_trend'])
-                <span class="flex items-center text-sm font-semibold {{ $stats['students_trend']['direction'] === 'up' ? 'text-admin-success' : 'text-admin-error' }}">
-                    <i data-lucide="{{ $stats['students_trend']['direction'] === 'up' ? 'arrow-up' : 'arrow-down' }}" class="mr-1 w-4 h-4"></i>
-                    {{ $stats['students_trend']['value'] !== null ? $stats['students_trend']['value'].'%' : 'Baru' }}
-                </span>
-            @endif
-        </div>
-        <p class="text-xs text-admin-secondary">dibanding 7 hari sebelumnya</p>
     </div>
 
-    <div class="flex flex-col gap-3 rounded-admin-card border border-admin-border bg-white p-6">
-        <div class="flex items-center gap-2">
-            <div class="flex size-11 shrink-0 items-center justify-center rounded-admin-icon bg-admin-success/10">
-                <i data-lucide="book-user" class="size-6 text-admin-success"></i>
+    <div class="col-xxl-4 col-md-6">
+        <div class="card p-3 radius-8 shadow-none border bg-gradient-dark-start-3 h-100">
+            <div class="card-body p-0">
+                <div class="d-flex align-items-center gap-2 mb-12">
+                    <span class="w-48-px h-48-px bg-base text-info text-2xl flex-shrink-0 d-flex justify-content-center align-items-center rounded-circle">
+                        <i class="ri-file-list-3-fill"></i>
+                    </span>
+                    <span class="fw-medium text-secondary-light text-lg">Total Enrollment</span>
+                </div>
+                <div class="d-flex align-items-center justify-content-between flex-wrap gap-8">
+                    <h5 class="fw-semibold mb-0">{{ number_format($stats['enrollments'], 0, ',', '.') }}</h5>
+                    @if ($stats['enrollments_trend'])
+                        <p class="text-sm mb-0 d-flex align-items-center gap-8">
+                            <span class="text-white px-1 rounded-2 fw-medium text-sm {{ $stats['enrollments_trend']['direction'] === 'up' ? 'bg-success-main' : 'bg-danger-main' }}">
+                                {{ $stats['enrollments_trend']['direction'] === 'up' ? '+' : '-' }}{{ $stats['enrollments_trend']['value'] ?? '' }}{{ $stats['enrollments_trend']['value'] !== null ? '%' : 'Baru' }}
+                            </span>
+                            7 hari terakhir
+                        </p>
+                    @endif
+                </div>
             </div>
-            <p class="font-medium text-admin-secondary">Total Pendaftaran</p>
         </div>
-        <div class="flex items-center gap-3">
-            <p class="text-[32px] font-bold leading-10">{{ number_format($stats['enrollments'], 0, ',', '.') }}</p>
-            @if ($stats['enrollments_trend'])
-                <span class="flex items-center text-sm font-semibold {{ $stats['enrollments_trend']['direction'] === 'up' ? 'text-admin-success' : 'text-admin-error' }}">
-                    <i data-lucide="{{ $stats['enrollments_trend']['direction'] === 'up' ? 'arrow-up' : 'arrow-down' }}" class="mr-1 w-4 h-4"></i>
-                    {{ $stats['enrollments_trend']['value'] !== null ? $stats['enrollments_trend']['value'].'%' : 'Baru' }}
-                </span>
-            @endif
-        </div>
-        <p class="text-xs text-admin-secondary">{{ $stats['completed_enrollments'] }} sudah selesai</p>
     </div>
+</div>
 
-    <div class="flex flex-col gap-3 rounded-admin-card border border-admin-border bg-white p-6">
-        <div class="flex items-center gap-2">
-            <div class="flex size-11 shrink-0 items-center justify-center rounded-admin-icon bg-admin-warning/10">
-                <i data-lucide="clipboard-list" class="size-6 text-admin-warning-dark"></i>
-            </div>
-            <p class="font-medium text-admin-secondary">Total Kuis</p>
+<div class="row gy-4 mb-24">
+    <div class="col-md-4">
+        <div class="card radius-8 border h-100 p-20">
+            <p class="text-secondary-light mb-1">Kursus Aktif</p>
+            <h5 class="fw-semibold mb-0">{{ $stats['published_courses'] }} <span class="text-secondary-light fw-normal text-md">/ {{ $stats['courses'] }}</span></h5>
         </div>
-        <p class="text-[32px] font-bold leading-10">{{ $stats['quizzes'] }}</p>
+    </div>
+    <div class="col-md-4">
+        <div class="card radius-8 border h-100 p-20">
+            <p class="text-secondary-light mb-1">Total Kuis</p>
+            <h5 class="fw-semibold mb-0">{{ $stats['quizzes'] }}</h5>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card radius-8 border h-100 p-20">
+            <p class="text-secondary-light mb-1">Rata-rata Progres Peserta</p>
+            <h5 class="fw-semibold mb-0">{{ $stats['average_progress'] !== null ? $stats['average_progress'].'%' : '—' }}</h5>
+        </div>
     </div>
 </div>
 
 {{-- Grafik pendaftaran peserta --}}
-<div class="mb-6 flex flex-col gap-6 rounded-admin-card border border-admin-border bg-white p-6 md:mb-8">
-    <div>
-        <h3 class="text-lg font-bold text-admin-foreground">Pendaftaran Peserta Baru</h3>
-        <p class="text-sm text-admin-secondary">14 hari terakhir</p>
-    </div>
-    <div class="h-[280px] w-full">
-        <canvas id="registrationChart"></canvas>
+<div class="card radius-8 border mb-24">
+    <div class="card-body">
+        <div class="d-flex align-items-center flex-wrap gap-2 justify-content-between mb-16">
+            <h6 class="fw-bold text-lg mb-0">Peserta Baru — 14 Hari Terakhir</h6>
+        </div>
+        <div id="registrationChart"></div>
     </div>
 </div>
 
-{{-- Kursus populer & peserta terbaru --}}
-<div class="grid grid-cols-1 gap-6 md:gap-8 lg:grid-cols-5">
-    <div class="flex flex-col gap-4 rounded-admin-card border border-admin-border bg-white p-6 lg:col-span-3">
-        <div class="flex items-center justify-between gap-3">
-            <h3 class="text-lg font-bold text-admin-foreground">Kursus Populer</h3>
-            <a href="{{ route('admin.courses.index') }}" class="text-sm font-semibold text-admin-primary hover:underline">Lihat Semua</a>
+<div class="row gy-4">
+    {{-- Enrollment terbaru --}}
+    <div class="col-xxl-7">
+        <div class="card radius-8 border h-100">
+            <div class="card-header d-flex align-items-center justify-content-between">
+                <h6 class="fw-bold text-lg mb-0">Enrollment Terbaru</h6>
+                <a href="{{ route('admin.participants.index') }}" class="text-primary-600 fw-medium d-flex align-items-center gap-1">
+                    Lihat Semua <i class="ri-arrow-right-s-line"></i>
+                </a>
+            </div>
+            <div class="card-body p-24">
+                @if ($recentEnrollments->isEmpty())
+                    <p class="text-secondary-light text-center mb-0 py-24">Belum ada pendaftaran kursus.</p>
+                @else
+                    <div class="table-responsive scroll-sm">
+                        <table class="table bordered-table mb-0">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Peserta</th>
+                                    <th scope="col">Kursus</th>
+                                    <th scope="col">Tanggal</th>
+                                    <th scope="col">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($recentEnrollments as $enrollment)
+                                    <tr>
+                                        <td class="text-secondary-light">{{ $enrollment['participant'] ?? '—' }}</td>
+                                        <td class="text-secondary-light">{{ $enrollment['course'] ?? '—' }}</td>
+                                        <td class="text-secondary-light">{{ $enrollment['date']->translatedFormat('d M Y') }}</td>
+                                        <td>
+                                            @if ($enrollment['status'] === 'completed')
+                                                <span class="bg-success-focus text-success-600 border border-success-main px-12 py-2 radius-4 fw-medium text-sm">Selesai</span>
+                                            @else
+                                                <span class="bg-warning-focus text-warning-600 border border-warning-main px-12 py-2 radius-4 fw-medium text-sm">Berlangsung</span>
+                                            @endif
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                @endif
+            </div>
         </div>
+    </div>
 
+    {{-- Aktivitas terbaru --}}
+    <div class="col-xxl-5">
+        <div class="card radius-8 border h-100">
+            <div class="card-header">
+                <h6 class="fw-bold text-lg mb-0">Aktivitas Terbaru</h6>
+            </div>
+            <div class="card-body p-24">
+                @if ($recentActivity->isEmpty())
+                    <p class="text-secondary-light text-center mb-0 py-24">Belum ada aktivitas.</p>
+                @else
+                    <ul class="list-unstyled d-flex flex-column gap-16 mb-0">
+                        @foreach ($recentActivity as $activity)
+                            <li class="d-flex align-items-start gap-3">
+                                <span class="w-36-px h-36-px flex-shrink-0 rounded-circle d-flex justify-content-center align-items-center
+                                    {{ match ($activity['type']) {
+                                        'registration' => 'bg-info-focus text-info-main',
+                                        'enrollment' => 'bg-primary-50 text-primary-600',
+                                        default => 'bg-success-focus text-success-main',
+                                    } }}">
+                                    <i class="{{ match ($activity['type']) {
+                                        'registration' => 'ri-user-add-line',
+                                        'enrollment' => 'ri-book-open-line',
+                                        default => 'ri-clipboard-line',
+                                    } }}"></i>
+                                </span>
+                                <div>
+                                    <p class="mb-0 text-secondary-light">{{ $activity['label'] }}</p>
+                                    <span class="text-sm text-neutral-400">{{ $activity['at']->diffForHumans() }}</span>
+                                </div>
+                            </li>
+                        @endforeach
+                    </ul>
+                @endif
+            </div>
+        </div>
+    </div>
+</div>
+
+{{-- Kursus terpopuler --}}
+<div class="card radius-8 border mt-24">
+    <div class="card-header d-flex align-items-center justify-content-between">
+        <h6 class="fw-bold text-lg mb-0">Kursus Terpopuler</h6>
+        <a href="{{ route('admin.courses.index') }}" class="text-primary-600 fw-medium d-flex align-items-center gap-1">
+            Lihat Semua <i class="ri-arrow-right-s-line"></i>
+        </a>
+    </div>
+    <div class="card-body p-24">
         @if ($topCourses->isEmpty())
-            <p class="rounded-xl border border-dashed border-admin-border p-8 text-center text-sm text-admin-secondary">
-                Belum ada kursus.
-            </p>
+            <p class="text-secondary-light text-center mb-0 py-24">Belum ada kursus.</p>
         @else
-            <div class="overflow-x-auto">
-                <table class="w-full min-w-[560px]">
+            <div class="table-responsive scroll-sm">
+                <table class="table bordered-table mb-0">
                     <thead>
-                        <tr class="border-b border-admin-border">
-                            <th class="px-4 py-3 text-left text-xs font-semibold uppercase text-admin-secondary">Kursus</th>
-                            <th class="px-4 py-3 text-left text-xs font-semibold uppercase text-admin-secondary">Modul</th>
-                            <th class="px-4 py-3 text-left text-xs font-semibold uppercase text-admin-secondary">Peserta</th>
-                            <th class="px-4 py-3 text-right text-xs font-semibold uppercase text-admin-secondary">Status</th>
+                        <tr>
+                            <th scope="col">Kursus</th>
+                            <th scope="col">Kategori</th>
+                            <th scope="col">Modul / Pelajaran</th>
+                            <th scope="col">Peserta</th>
+                            <th scope="col">Status</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach ($topCourses as $course)
-                            <tr class="border-b border-admin-border last:border-0 hover:bg-admin-muted/50 transition-colors">
-                                <td class="px-4 py-3">
-                                    <div class="flex items-center gap-3">
-                                        <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br {{ $course['thumbnail_color'] }} text-base">
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center gap-3">
+                                        <span class="w-40-px h-40-px flex-shrink-0 d-flex justify-content-center align-items-center radius-8 bg-gradient-to-br {{ $course['thumbnail_color'] }} text-white">
                                             {{ $course['thumbnail_icon'] }}
                                         </span>
-                                        <div class="min-w-0">
-                                            <p class="truncate font-semibold text-admin-foreground">{{ $course['title'] }}</p>
-                                            <p class="truncate text-xs text-admin-secondary">{{ $course['category'] ?? 'Tanpa kategori' }}</p>
-                                        </div>
+                                        <span class="fw-medium text-secondary-light">{{ $course['title'] }}</span>
                                     </div>
                                 </td>
-                                <td class="px-4 py-3 font-medium text-admin-foreground">
-                                    {{ $course['modules_count'] }} modul · {{ $course['lessons_count'] }} pelajaran
-                                </td>
-                                <td class="px-4 py-3 font-medium text-admin-foreground">{{ number_format($course['students_count'], 0, ',', '.') }}</td>
-                                <td class="px-4 py-3 text-right">
-                                    <span class="inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium {{ $course['is_published'] ? 'bg-admin-success-light text-admin-success-dark' : 'bg-admin-muted text-admin-secondary' }}">
-                                        {{ $course['is_published'] ? 'Diterbitkan' : 'Draf' }}
-                                    </span>
+                                <td class="text-secondary-light">{{ $course['category'] ?? 'Tanpa kategori' }}</td>
+                                <td class="text-secondary-light">{{ $course['modules_count'] }} modul · {{ $course['lessons_count'] }} pelajaran</td>
+                                <td class="text-secondary-light">{{ number_format($course['students_count'], 0, ',', '.') }}</td>
+                                <td>
+                                    @if ($course['is_published'])
+                                        <span class="bg-success-focus text-success-600 border border-success-main px-12 py-2 radius-4 fw-medium text-sm">Diterbitkan</span>
+                                    @else
+                                        <span class="bg-neutral-200 text-neutral-600 border border-neutral-400 px-12 py-2 radius-4 fw-medium text-sm">Draf</span>
+                                    @endif
                                 </td>
                             </tr>
                         @endforeach
@@ -149,71 +261,25 @@
             </div>
         @endif
     </div>
-
-    <div class="flex flex-col gap-4 rounded-admin-card border border-admin-border bg-white p-6 lg:col-span-2">
-        <div class="flex items-center justify-between gap-3">
-            <h3 class="text-lg font-bold text-admin-foreground">Peserta Terbaru</h3>
-            <a href="{{ route('admin.participants.index') }}" class="text-sm font-semibold text-admin-primary hover:underline">Lihat Semua</a>
-        </div>
-
-        @if ($recentParticipants->isEmpty())
-            <p class="rounded-xl border border-dashed border-admin-border p-8 text-center text-sm text-admin-secondary">
-                Belum ada peserta.
-            </p>
-        @else
-            <div class="flex flex-col gap-4">
-                @foreach ($recentParticipants as $participant)
-                    <div class="flex items-center gap-4">
-                        <span class="flex size-12 shrink-0 items-center justify-center rounded-full bg-admin-primary/10 text-sm font-semibold text-admin-primary">
-                            {{ Str::of($participant['name'])->substr(0, 1)->upper() }}
-                        </span>
-                        <div class="min-w-0 flex-1">
-                            <p class="truncate font-semibold text-admin-foreground">{{ $participant['name'] }}</p>
-                            <p class="truncate text-sm text-admin-secondary">
-                                {{ $participant['latest_course'] ? 'Mengikuti '.$participant['latest_course'] : 'Belum ikut kursus' }}
-                            </p>
-                        </div>
-                        <span class="shrink-0 text-xs text-admin-secondary">{{ $participant['joined_at']->diffForHumans(['short' => true]) }}</span>
-                    </div>
-                @endforeach
-            </div>
-        @endif
-    </div>
 </div>
 
 @push('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        const ctx = document.getElementById('registrationChart');
-        if (! ctx || ! window.Chart) return;
+        const el = document.getElementById('registrationChart');
+        if (! el || typeof ApexCharts === 'undefined') return;
 
-        new window.Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: {!! Js::from($registrationChart['labels']) !!},
-                datasets: [{
-                    label: 'Peserta Baru',
-                    data: {!! Js::from($registrationChart['values']) !!},
-                    borderColor: '#165DFF',
-                    backgroundColor: 'rgba(22, 93, 255, 0.1)',
-                    borderWidth: 2,
-                    pointBackgroundColor: '#165DFF',
-                    pointRadius: 3,
-                    pointHoverRadius: 5,
-                    tension: 0.4,
-                    fill: true,
-                }],
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    y: { beginAtZero: true, ticks: { precision: 0 }, grid: { color: 'rgba(0,0,0,0.05)' } },
-                    x: { grid: { display: false } },
-                },
-                plugins: { legend: { display: false } },
-            },
-        });
+        new ApexCharts(el, {
+            chart: { type: 'area', height: 280, toolbar: { show: false }, fontFamily: 'inherit' },
+            series: [{ name: 'Peserta Baru', data: {!! Js::from($registrationChart['values']) !!} }],
+            xaxis: { categories: {!! Js::from($registrationChart['labels']) !!} },
+            yaxis: { min: 0, forceNiceScale: true, labels: { formatter: (v) => Math.round(v) } },
+            colors: ['#487FFF'],
+            stroke: { curve: 'smooth', width: 2 },
+            fill: { type: 'gradient', gradient: { shadeIntensity: 1, opacityFrom: 0.35, opacityTo: 0.05, stops: [0, 90, 100] } },
+            dataLabels: { enabled: false },
+            grid: { borderColor: '#E5E7EB' },
+        }).render();
     });
 </script>
 @endpush
