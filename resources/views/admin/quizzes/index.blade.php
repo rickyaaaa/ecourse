@@ -121,10 +121,19 @@
                 const form = document.createElement('form');
                 form.method = 'POST';
                 form.action = `/admin/kuis/{{ $quiz->id }}/soal/${question.id}`;
-                form.innerHTML = `
-                    <input type=\"hidden\" name=\"_token\" value=\"${document.querySelector('meta[name=csrf-token]').content}\">
-                    <input type=\"hidden\" name=\"_method\" value=\"DELETE\">
-                `;
+
+                const token = document.createElement('input');
+                token.type = 'hidden';
+                token.name = '_token';
+                token.value = document.querySelector('meta[name=csrf-token]').content;
+                form.appendChild(token);
+
+                const methodField = document.createElement('input');
+                methodField.type = 'hidden';
+                methodField.name = '_method';
+                methodField.value = 'DELETE';
+                form.appendChild(methodField);
+
                 document.body.appendChild(form);
                 form.submit();
             },

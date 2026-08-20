@@ -29,10 +29,19 @@
             const form = document.createElement('form');
             form.method = 'POST';
             form.action = action;
-            form.innerHTML = `
-                <input type=\"hidden\" name=\"_token\" value=\"${document.querySelector('meta[name=csrf-token]').content}\">
-                <input type=\"hidden\" name=\"_method\" value=\"${method}\">
-            `;
+
+            const token = document.createElement('input');
+            token.type = 'hidden';
+            token.name = '_token';
+            token.value = document.querySelector('meta[name=csrf-token]').content;
+            form.appendChild(token);
+
+            const methodField = document.createElement('input');
+            methodField.type = 'hidden';
+            methodField.name = '_method';
+            methodField.value = method;
+            form.appendChild(methodField);
+
             document.body.appendChild(form);
             form.submit();
         },
@@ -40,7 +49,7 @@
             this.submitAction(`/admin/peserta/${participant.id}/status`, 'PUT');
         },
         deleteParticipant(participant) {
-            if (! confirm(`Hapus peserta \"${participant.name}\"? Tindakan ini tidak bisa dibatalkan.`)) return;
+            if (! confirm(`Hapus peserta '${participant.name}'? Tindakan ini tidak bisa dibatalkan.`)) return;
             this.submitAction(`/admin/peserta/${participant.id}`, 'DELETE');
         },
     }"

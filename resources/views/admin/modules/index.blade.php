@@ -61,7 +61,7 @@
                 this.showModuleModal = true;
             },
             deleteModule(module) {
-                if (! confirm(`Hapus modul \"${module.title}\" beserta seluruh pelajarannya? Tindakan ini tidak bisa dibatalkan.`)) return;
+                if (! confirm(`Hapus modul '${module.title}' beserta seluruh pelajarannya? Tindakan ini tidak bisa dibatalkan.`)) return;
                 this.submitDelete(`/admin/materi/${module.id}`);
             },
             openCreateLesson(module) {
@@ -77,17 +77,26 @@
                 this.showLessonModal = true;
             },
             deleteLesson(module, lesson) {
-                if (! confirm(`Hapus pelajaran \"${lesson.title}\"? Tindakan ini tidak bisa dibatalkan.`)) return;
+                if (! confirm(`Hapus pelajaran '${lesson.title}'? Tindakan ini tidak bisa dibatalkan.`)) return;
                 this.submitDelete(`/admin/materi/${module.id}/pelajaran/${lesson.id}`);
             },
             submitDelete(action) {
                 const form = document.createElement('form');
                 form.method = 'POST';
                 form.action = action;
-                form.innerHTML = `
-                    <input type=\"hidden\" name=\"_token\" value=\"${document.querySelector('meta[name=csrf-token]').content}\">
-                    <input type=\"hidden\" name=\"_method\" value=\"DELETE\">
-                `;
+
+                const token = document.createElement('input');
+                token.type = 'hidden';
+                token.name = '_token';
+                token.value = document.querySelector('meta[name=csrf-token]').content;
+                form.appendChild(token);
+
+                const methodField = document.createElement('input');
+                methodField.type = 'hidden';
+                methodField.name = '_method';
+                methodField.value = 'DELETE';
+                form.appendChild(methodField);
+
                 document.body.appendChild(form);
                 form.submit();
             },
