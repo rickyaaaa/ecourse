@@ -52,9 +52,9 @@
                 <div class="th-mobile-menu-bottom">
                     <div class="btn-wrap">
                         @auth
-                            <a href="{{ route('dashboard.index') }}" class="th-btn w-100">DASBOR SAYA</a>
+                            <a href="{{ route('dashboard.index') }}" class="nav-btn nav-btn-solid w-100 justify-content-center">DASBOR SAYA</a>
                         @else
-                            <a href="{{ route('register') }}" class="th-btn w-100">DAFTAR GRATIS</a>
+                            <a href="{{ route('register') }}" class="nav-btn nav-btn-solid w-100 justify-content-center">DAFTAR GRATIS</a>
                         @endauth
                     </div>
                 </div>
@@ -146,8 +146,9 @@
                             <div class="header-button">
                                 @auth
                                     <div class="dropdown-link">
-                                        <a class="dropdown-toggle th-btn style-border" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                            <i class="fal fa-user me-1"></i>{{ Str::of(auth()->user()->name)->before(' ') }}
+                                        <a class="nav-btn nav-btn-outline" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <i class="fal fa-user"></i>{{ Str::of(auth()->user()->name)->before(' ') }}
+                                            <i class="fal fa-chevron-down nav-btn-caret"></i>
                                         </a>
                                         <ul class="dropdown-menu dropdown-menu-end">
                                             <li><a class="dropdown-item" href="{{ route('dashboard.index') }}"><i class="fal fa-gauge me-2"></i>Dasbor Saya</a></li>
@@ -169,12 +170,8 @@
                                         </ul>
                                     </div>
                                 @else
-                                    <a href="{{ route('login') }}" class="th-btn style-border">MASUK</a>
-                                    <a href="{{ route('register') }}" class="th-btn">DAFTAR GRATIS
-                                        <svg class="ms-2" width="16" height="14" viewBox="0 0 16 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M7.5264 0C7.5264 0.6962 8.21633 1.738 8.9138 2.61293C9.81193 3.7394 10.8838 4.72347 12.1137 5.4748C13.0351 6.0374 14.154 6.57747 15.0528 6.57747M7.5264 13.1712C7.5264 12.475 8.21633 11.4332 8.9138 10.5583C9.81193 9.43187 10.8838 8.44773 12.1137 7.6964C13.0351 7.1338 14.154 6.59373 15.0528 6.59373M15.0528 6.5856H0" stroke="currentColor" stroke-width="1.5" />
-                                        </svg>
-                                    </a>
+                                    <a href="{{ route('login') }}" class="nav-btn nav-btn-outline">MASUK</a>
+                                    <a href="{{ route('register') }}" class="nav-btn nav-btn-solid">DAFTAR GRATIS</a>
                                 @endauth
                             </div>
                         </div>

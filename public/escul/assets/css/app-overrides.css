@@ -6,6 +6,73 @@
  * Escul apa adanya".
  */
 
+/*
+ * Tombol nav header (Masuk / Daftar Gratis / dropdown akun) SENGAJA tidak
+ * pakai .th-btn bawaan template. .th-btn punya animasi "wipe reveal" di
+ * ::after (mask-image + mask-position, steps(29), forwards) yang otomatis
+ * jalan sekali saat elemen muncul — kombinasinya dengan Bootstrap
+ * .dropdown-toggle (yang JUGA pakai ::after buat panah/caret) bentrok satu
+ * sama lain di elemen yang sama, dan hasil akhirnya warna latar tidak
+ * penuh/rapi untuk tombol kecil seperti ini. Dipakai class sendiri di sini
+ * yang solid & 100% terkontrol, tanpa animasi/pseudo-element yang bentrok.
+ */
+.nav-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 22px;
+    border-radius: 50px;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1.2;
+    white-space: nowrap;
+    border: 1px solid transparent;
+    transition: background-color .2s ease, color .2s ease, border-color .2s ease;
+}
+
+.nav-btn-outline {
+    background-color: #fff;
+    border-color: var(--th-border-color);
+    color: var(--title-color);
+}
+
+.nav-btn-outline:hover, .nav-btn-outline:focus {
+    border-color: var(--theme-color);
+    color: var(--theme-color);
+}
+
+.nav-btn-solid {
+    background-color: var(--theme-color2);
+    color: var(--title-color);
+}
+
+.nav-btn-solid:hover, .nav-btn-solid:focus {
+    background-color: var(--theme-color);
+    color: #fff;
+}
+
+/* Varian untuk dipakai di atas latar gelap/berwarna (mis. hero). */
+.nav-btn-outline-light {
+    background-color: transparent;
+    border-color: rgba(255, 255, 255, .5);
+    color: #fff;
+}
+
+.nav-btn-outline-light:hover, .nav-btn-outline-light:focus {
+    background-color: #fff;
+    border-color: #fff;
+    color: var(--title-color);
+}
+
+.nav-btn .nav-btn-caret {
+    font-size: 11px;
+    transition: transform .2s ease;
+}
+
+.dropdown-link.show .nav-btn-caret {
+    transform: rotate(180deg);
+}
+
 /* Anchor menu (#katalog, #keunggulan, dst) tidak boleh tertutup header
    sticky saat discroll-ke. */
 [id] {
