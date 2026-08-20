@@ -66,6 +66,18 @@ class AuthController extends Controller
             ]);
         }
 
+        if (Auth::user()->isAdmin()) {
+            Auth::logout();
+
+            // Kredensialnya benar dan ini memang akunnya sendiri, jadi aman
+            // memberi tahu ini akun admin — bukan info yang bocor ke pihak
+            // lain. Halaman login peserta sengaja tidak dipakai buat masuk
+            // sebagai admin; arahkan ke halaman login admin yang terpisah.
+            throw ValidationException::withMessages([
+                'email' => 'Ini akun admin. Silakan masuk lewat halaman login khusus admin.',
+            ]);
+        }
+
         RateLimiter::clear($throttleKey);
         $request->session()->regenerate();
 
@@ -79,13 +91,18 @@ class AuthController extends Controller
      */
     public function logout(Request $request): RedirectResponse
     {
+        // Admin yang logout dari Panel Admin diarahkan balik ke halaman
+        // login admin (bukan beranda publik) — konsisten dengan pintu masuk
+        // yang mereka pakai (lihat Admin\AuthController).
+        $wasAdmin = Auth::user()?->isAdmin() ?? false;
+
         Auth::logout();
 
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
         return redirect()
-            ->route('courses.index')
+            ->route($wasAdmin ? 'admin.login' : 'courses.index')
             ->with('notice', 'Kamu berhasil keluar.');
     }
 

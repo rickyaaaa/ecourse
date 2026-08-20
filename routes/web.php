@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\AuthController as AdminAuthController;
 use App\Http\Controllers\Admin\CourseController as AdminCourseController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\ModuleController as AdminModuleController;
@@ -59,6 +60,16 @@ Route::get('/kursus/{course}/modul/{module}/kuis', [QuizController::class, 'show
 Route::post('/kursus/{course}/modul/{module}/kuis/kirim', [QuizController::class, 'submit'])
     ->where('module', '[0-9]+')
     ->name('quizzes.submit');
+
+// Login admin sengaja dipisah dari /masuk milik peserta — URL & tampilannya
+// beda (lihat resources/views/admin/auth/login.blade.php), supaya tidak
+// tercampur satu form dengan peserta dan tidak muncul di menu publik biasa.
+// Tetap satu tabel users/guard yang sama; Admin\AuthController yang menolak
+// kalau kredensialnya valid tapi bukan milik akun admin.
+Route::middleware('guest')->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/masuk', [AdminAuthController::class, 'showLoginForm'])->name('login');
+    Route::post('/masuk', [AdminAuthController::class, 'login'])->name('login.store');
+});
 
 // Panel admin: hanya untuk pengguna dengan role 'admin' (lihat middleware
 // 'admin' di bootstrap/app.php). Untuk aksi per-baris yang butuh aturan
