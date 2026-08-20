@@ -55,18 +55,20 @@
 
     <div class="form-group style-border3 mb-3">
         <label for="name" class="form-label">Nama Lengkap</label>
-        <input
-            type="text"
-            id="name"
-            name="name"
-            autofocus
-            autocomplete="name"
-            placeholder="Nama kamu"
-            x-model="name"
-            class="form-control"
-            :class="nameError && 'is-invalid'"
-        >
-        <i class="fal fa-user"></i>
+        <div class="position-relative">
+            <input
+                type="text"
+                id="name"
+                name="name"
+                autofocus
+                autocomplete="name"
+                placeholder="Nama kamu"
+                x-model="name"
+                class="form-control"
+                :class="nameError && 'is-invalid'"
+            >
+            <i class="fal fa-user field-icon"></i>
+        </div>
         <p x-show="nameError" x-cloak class="text-danger small mt-1 mb-0" x-text="nameError"></p>
         @error('name')
             <p class="text-danger small mt-1 mb-0">{{ $message }}</p>
@@ -75,20 +77,22 @@
 
     <div class="form-group style-border3 mb-3">
         <label for="email" class="form-label">Email</label>
-        <input
-            type="email"
-            id="email"
-            name="email"
-            autocomplete="email"
-            autocapitalize="off"
-            autocorrect="off"
-            spellcheck="false"
-            placeholder="nama@email.com"
-            x-model="email"
-            class="form-control"
-            :class="emailError && 'is-invalid'"
-        >
-        <i class="fal fa-envelope"></i>
+        <div class="position-relative">
+            <input
+                type="email"
+                id="email"
+                name="email"
+                autocomplete="email"
+                autocapitalize="off"
+                autocorrect="off"
+                spellcheck="false"
+                placeholder="nama@email.com"
+                x-model="email"
+                class="form-control"
+                :class="emailError && 'is-invalid'"
+            >
+            <i class="fal fa-envelope field-icon"></i>
+        </div>
         <p x-show="emailError" x-cloak class="text-danger small mt-1 mb-0" x-text="emailError"></p>
         @error('email')
             <p class="text-danger small mt-1 mb-0">{{ $message }}</p>
@@ -97,17 +101,19 @@
 
     <div class="form-group style-border3 mb-3">
         <label for="password" class="form-label">Kata Sandi</label>
-        <input
-            type="password"
-            id="password"
-            name="password"
-            autocomplete="new-password"
-            placeholder="Minimal 8 karakter"
-            x-model="password"
-            class="form-control"
-            :class="passwordError && 'is-invalid'"
-        >
-        <i class="fal fa-lock"></i>
+        <div class="position-relative">
+            <input
+                type="password"
+                id="password"
+                name="password"
+                autocomplete="new-password"
+                placeholder="Minimal 8 karakter"
+                x-model="password"
+                class="form-control"
+                :class="passwordError && 'is-invalid'"
+            >
+            <i class="fal fa-lock field-icon"></i>
+        </div>
         <p x-show="passwordError" x-cloak class="text-danger small mt-1 mb-0" x-text="passwordError"></p>
         @error('password')
             <p class="text-danger small mt-1 mb-0">{{ $message }}</p>
@@ -116,17 +122,19 @@
 
     <div class="form-group style-border3 mb-2">
         <label for="password_confirmation" class="form-label">Konfirmasi Kata Sandi</label>
-        <input
-            type="password"
-            id="password_confirmation"
-            name="password_confirmation"
-            autocomplete="new-password"
-            placeholder="Ulangi kata sandi"
-            x-model="passwordConfirmation"
-            class="form-control"
-            :class="passwordConfirmationError && 'is-invalid'"
-        >
-        <i class="fal fa-lock"></i>
+        <div class="position-relative">
+            <input
+                type="password"
+                id="password_confirmation"
+                name="password_confirmation"
+                autocomplete="new-password"
+                placeholder="Ulangi kata sandi"
+                x-model="passwordConfirmation"
+                class="form-control"
+                :class="passwordConfirmationError && 'is-invalid'"
+            >
+            <i class="fal fa-lock field-icon"></i>
+        </div>
         <p x-show="passwordConfirmationError" x-cloak class="text-danger small mt-1 mb-0" x-text="passwordConfirmationError"></p>
     </div>
 

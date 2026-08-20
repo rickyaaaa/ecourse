@@ -40,21 +40,23 @@
 
     <div class="form-group style-border3 mb-3">
         <label for="email" class="form-label">Email</label>
-        <input
-            type="email"
-            id="email"
-            name="email"
-            autofocus
-            autocomplete="email"
-            autocapitalize="off"
-            autocorrect="off"
-            spellcheck="false"
-            placeholder="nama@email.com"
-            x-model="email"
-            class="form-control"
-            :class="emailError && 'is-invalid'"
-        >
-        <i class="fal fa-envelope"></i>
+        <div class="position-relative">
+            <input
+                type="email"
+                id="email"
+                name="email"
+                autofocus
+                autocomplete="email"
+                autocapitalize="off"
+                autocorrect="off"
+                spellcheck="false"
+                placeholder="nama@email.com"
+                x-model="email"
+                class="form-control"
+                :class="emailError && 'is-invalid'"
+            >
+            <i class="fal fa-envelope field-icon"></i>
+        </div>
         <p x-show="emailError" x-cloak class="text-danger small mt-1 mb-0" x-text="emailError"></p>
         @error('email')
             <p class="text-danger small mt-1 mb-0">{{ $message }}</p>
@@ -66,17 +68,19 @@
             Kata Sandi
             <a href="{{ route('password.request') }}" class="small">Lupa kata sandi?</a>
         </label>
-        <input
-            type="password"
-            id="password"
-            name="password"
-            autocomplete="current-password"
-            placeholder="Kata sandi kamu"
-            x-model="password"
-            class="form-control"
-            :class="passwordError && 'is-invalid'"
-        >
-        <i class="fal fa-lock"></i>
+        <div class="position-relative">
+            <input
+                type="password"
+                id="password"
+                name="password"
+                autocomplete="current-password"
+                placeholder="Kata sandi kamu"
+                x-model="password"
+                class="form-control"
+                :class="passwordError && 'is-invalid'"
+            >
+            <i class="fal fa-lock field-icon"></i>
+        </div>
         <p x-show="passwordError" x-cloak class="text-danger small mt-1 mb-0" x-text="passwordError"></p>
     </div>
 

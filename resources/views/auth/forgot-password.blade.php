@@ -35,21 +35,23 @@
 
     <div class="form-group style-border3 mb-2">
         <label for="email" class="form-label">Email</label>
-        <input
-            type="email"
-            id="email"
-            name="email"
-            autofocus
-            autocomplete="email"
-            autocapitalize="off"
-            autocorrect="off"
-            spellcheck="false"
-            placeholder="nama@email.com"
-            x-model="email"
-            class="form-control"
-            :class="emailError && 'is-invalid'"
-        >
-        <i class="fal fa-envelope"></i>
+        <div class="position-relative">
+            <input
+                type="email"
+                id="email"
+                name="email"
+                autofocus
+                autocomplete="email"
+                autocapitalize="off"
+                autocorrect="off"
+                spellcheck="false"
+                placeholder="nama@email.com"
+                x-model="email"
+                class="form-control"
+                :class="emailError && 'is-invalid'"
+            >
+            <i class="fal fa-envelope field-icon"></i>
+        </div>
         <p x-show="emailError" x-cloak class="text-danger small mt-1 mb-0" x-text="emailError"></p>
         @error('email')
             <p class="text-danger small mt-1 mb-0">{{ $message }}</p>

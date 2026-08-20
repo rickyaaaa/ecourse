@@ -42,16 +42,18 @@
 
     <div class="form-group style-border3 mb-3">
         <label for="email" class="form-label">Email</label>
-        <input
-            type="email"
-            id="email"
-            name="email"
-            required
-            readonly
-            value="{{ $email }}"
-            class="form-control bg-light"
-        >
-        <i class="fal fa-envelope"></i>
+        <div class="position-relative">
+            <input
+                type="email"
+                id="email"
+                name="email"
+                required
+                readonly
+                value="{{ $email }}"
+                class="form-control bg-light"
+            >
+            <i class="fal fa-envelope field-icon"></i>
+        </div>
         @error('email')
             <p class="text-danger small mt-1 mb-0">{{ $message }}</p>
         @enderror
@@ -59,18 +61,20 @@
 
     <div class="form-group style-border3 mb-3">
         <label for="password" class="form-label">Kata Sandi Baru</label>
-        <input
-            type="password"
-            id="password"
-            name="password"
-            autofocus
-            autocomplete="new-password"
-            placeholder="Minimal 8 karakter"
-            x-model="password"
-            class="form-control"
-            :class="passwordError && 'is-invalid'"
-        >
-        <i class="fal fa-lock"></i>
+        <div class="position-relative">
+            <input
+                type="password"
+                id="password"
+                name="password"
+                autofocus
+                autocomplete="new-password"
+                placeholder="Minimal 8 karakter"
+                x-model="password"
+                class="form-control"
+                :class="passwordError && 'is-invalid'"
+            >
+            <i class="fal fa-lock field-icon"></i>
+        </div>
         <p x-show="passwordError" x-cloak class="text-danger small mt-1 mb-0" x-text="passwordError"></p>
         @error('password')
             <p class="text-danger small mt-1 mb-0">{{ $message }}</p>
@@ -79,17 +83,19 @@
 
     <div class="form-group style-border3 mb-2">
         <label for="password_confirmation" class="form-label">Konfirmasi Kata Sandi Baru</label>
-        <input
-            type="password"
-            id="password_confirmation"
-            name="password_confirmation"
-            autocomplete="new-password"
-            placeholder="Ulangi kata sandi baru"
-            x-model="passwordConfirmation"
-            class="form-control"
-            :class="confirmationError && 'is-invalid'"
-        >
-        <i class="fal fa-lock"></i>
+        <div class="position-relative">
+            <input
+                type="password"
+                id="password_confirmation"
+                name="password_confirmation"
+                autocomplete="new-password"
+                placeholder="Ulangi kata sandi baru"
+                x-model="passwordConfirmation"
+                class="form-control"
+                :class="confirmationError && 'is-invalid'"
+            >
+            <i class="fal fa-lock field-icon"></i>
+        </div>
         <p x-show="confirmationError" x-cloak class="text-danger small mt-1 mb-0" x-text="confirmationError"></p>
     </div>
 

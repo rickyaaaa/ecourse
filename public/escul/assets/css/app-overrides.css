@@ -73,6 +73,25 @@
     transform: rotate(180deg);
 }
 
+/* Ikon di dalam field form login/daftar/lupa-sandi dkk. Form-group bawaan
+   template Escul tidak punya <label> terpisah (cuma placeholder di dalam
+   input), jadi posisi ikonnya (`.form-group > i { top: 20px }` di
+   style.css) dihitung dari atas .form-group — pas kita tambah <label>
+   demi aksesibilitas/kejelasan, ikon jadi ketarik ke baris label, bukan
+   center di kotak input (kelihatan gede & "nyangkut" di atas). Input+ikon
+   sekarang dibungkus <div class="position-relative"> sendiri, dan ikon
+   diberi class .field-icon supaya diposisikan relatif ke situ — selalu
+   center-vertikal di input, ada label atau tidak. */
+.form-group .field-icon {
+    position: absolute;
+    top: 50%;
+    right: 25px;
+    transform: translateY(-50%);
+    font-size: 16px;
+    color: var(--body-color);
+    pointer-events: none;
+}
+
 /* Anchor menu (#katalog, #keunggulan, dst) tidak boleh tertutup header
    sticky saat discroll-ke. */
 [id] {
