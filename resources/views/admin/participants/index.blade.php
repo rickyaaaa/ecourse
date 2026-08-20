@@ -146,10 +146,19 @@
         </div>
     </div>
 
-    {{-- Modal tambah peserta --}}
-    <div x-show="showModal" x-cloak class="position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center p-16" style="display:none;z-index:1050;">
+    {{--
+        Modal tambah peserta. Div x-show/x-cloak SENGAJA tidak diberi
+        class d-flex (lihat catatan panjang di admin/courses/index.blade.php)
+        — Bootstrap men-set display:...!important pada class display-*,
+        yang mengalahkan x-show Alpine maupun style="display:none" statis,
+        jadi modal tidak akan pernah bisa disembunyikan lagi setelah
+        Alpine melepas x-cloak. Layout flex-center dipindah ke div
+        pembungkus terpisah yang tidak dikontrol x-show.
+    --}}
+    <div x-show="showModal" x-cloak class="position-fixed top-0 start-0 w-100 h-100" style="display:none;z-index:1050;">
         <div @click="showModal = false" class="position-fixed top-0 start-0 w-100 h-100 bg-dark" style="opacity:.5;"></div>
 
+        <div class="d-flex align-items-center justify-content-center w-100 h-100 p-16">
         <div class="position-relative bg-white radius-8 shadow w-100 p-24" style="max-width:480px;">
             <h6 class="fw-bold mb-16">Tambah Peserta</h6>
 
@@ -190,6 +199,7 @@
                     <button type="submit" class="btn btn-primary-600 radius-8 px-16 py-8">Simpan</button>
                 </div>
             </form>
+        </div>
         </div>
     </div>
 </div>

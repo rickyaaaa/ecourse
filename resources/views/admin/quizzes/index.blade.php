@@ -223,10 +223,18 @@
             @endforelse
         </div>
 
-        {{-- Modal ubah pengaturan kuis --}}
-        <div x-show="showQuizModal" x-cloak class="position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center p-16" style="display:none;z-index:1050;">
+        {{--
+            Modal ubah pengaturan kuis. Div x-show/x-cloak SENGAJA tidak
+            diberi class d-flex (lihat catatan panjang di
+            admin/courses/index.blade.php) — Bootstrap men-set
+            display:...!important pada class display-*, mengalahkan x-show
+            Alpine maupun style="display:none" statis. Layout flex-center
+            dipindah ke div pembungkus terpisah yang tidak dikontrol x-show.
+        --}}
+        <div x-show="showQuizModal" x-cloak class="position-fixed top-0 start-0 w-100 h-100" style="display:none;z-index:1050;">
             <div @click="showQuizModal = false" class="position-fixed top-0 start-0 w-100 h-100 bg-dark" style="opacity:.5;"></div>
 
+            <div class="d-flex align-items-center justify-content-center w-100 h-100 p-16">
             <div class="position-relative bg-white radius-8 shadow w-100 p-24" style="max-width:480px;">
                 <h6 class="fw-bold mb-16">Ubah Pengaturan Kuis</h6>
 
@@ -257,12 +265,14 @@
                     </div>
                 </form>
             </div>
+            </div>
         </div>
 
-        {{-- Modal tambah/ubah soal --}}
-        <div x-show="showQuestionModal" x-cloak class="position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center p-16" style="display:none;z-index:1050;">
+        {{-- Modal tambah/ubah soal (lihat catatan d-flex di modal pengaturan kuis di atas) --}}
+        <div x-show="showQuestionModal" x-cloak class="position-fixed top-0 start-0 w-100 h-100" style="display:none;z-index:1050;">
             <div @click="showQuestionModal = false" class="position-fixed top-0 start-0 w-100 h-100 bg-dark" style="opacity:.5;"></div>
 
+            <div class="d-flex align-items-center justify-content-center w-100 h-100 p-16">
             <div class="position-relative bg-white radius-8 shadow w-100 p-24" style="max-width:600px;max-height:90vh;overflow-y:auto;">
                 <h6 class="fw-bold mb-16" x-text="editingQuestionId === null ? 'Tambah Soal' : 'Ubah Soal'"></h6>
 
@@ -362,6 +372,7 @@
                         </button>
                     </div>
                 </form>
+            </div>
             </div>
         </div>
     </div>
