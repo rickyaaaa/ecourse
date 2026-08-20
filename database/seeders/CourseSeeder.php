@@ -8,6 +8,7 @@ use App\Models\Lesson;
 use App\Models\Module;
 use App\Support\MockData;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Storage;
 
 class CourseSeeder extends Seeder
 {
@@ -20,6 +21,18 @@ class CourseSeeder extends Seeder
      */
     public function run(): void
     {
+        // File ini sebelumnya dianggap "sudah ada" di storage/app/public,
+        // tapi folder itu memang sengaja di-gitignore (isi upload asli
+        // tidak boleh ikut ke-commit) — jadi kalau cuma diasumsikan ada,
+        // fitur unduh lampiran ini akan 404 di server manapun yang baru
+        // di-deploy/seed dari nol. Ditulis di sini supaya file lampiran
+        // demo ini SELALU ada setiap kali seeder ini dijalankan, di
+        // environment mana pun.
+        Storage::disk('public')->put(
+            'lessons/materi-pendukung.txt',
+            "Materi Pendukung\n\nBerkas ini adalah contoh lampiran materi (dummy) yang bisa diunduh peserta dari halaman pelajaran.\n"
+        );
+
         $mockCategoriesById = collect(MockData::categories())->keyBy('id');
 
         foreach (MockData::courses() as $courseData) {
