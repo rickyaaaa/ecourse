@@ -4,56 +4,94 @@
 
 @section('content')
 {{-- ============== Hero ============== --}}
+@php
+    $heroSlides = [
+        [
+            'bg' => 'hero_bg_5_1.jpg',
+            'title1' => 'Belajar Online Lebih Terarah, ',
+            'title2' => 'Fleksibel, dan ',
+            'title3' => 'Mudah Dipantau',
+            'text' => 'Akses materi video, PDF, kuis, dan progres belajar dalam satu platform yang rapi untuk siswa dan pengelola kursus.',
+            'ring' => 'Kepuasan Pelajar, Alumni Sukses',
+        ],
+        [
+            'bg' => 'hero_bg_5_2.jpg',
+            'title1' => 'Pantau Progres Belajarmu, ',
+            'title2' => 'Modul demi Modul, ',
+            'title3' => 'Sampai Tuntas',
+            'text' => 'Tiap kursus tersusun rapi jadi modul & pelajaran, lengkap dengan kuis dan catatan progres yang selalu tersimpan.',
+            'ring' => 'Kepuasan Pelajar, Alumni Sukses',
+        ],
+    ];
+@endphp
 <div class="th-hero-wrapper hero-5" id="hero">
-    <div class="hero-inner">
-        <div class="th-hero-bg" data-mask-src="{{ asset('escul/assets/img/hero/hero_bg_mask5_1.png') }}">
-            <div class="thumb">
-                <img class="img-cover" src="{{ asset('escul/assets/img/hero/hero_bg_5_1.jpg') }}" alt="Suasana belajar online">
-            </div>
-        </div>
-        <div class="about-tag" data-ani="slideinup">
-            <div class="about-experience-tag">
-                <span class="circle-title-anime">{{ number_format($stats['courses'], 0, ',', '.') }} Kursus Siap Diikuti Hari Ini</span>
-            </div>
-        </div>
-        <div class="container">
-            <div class="row">
-                <div class="col-xl-9">
-                    <div class="hero-style5">
-                        <h1 class="hero-title text-white">
-                            <span class="title1" data-ani="slideinup" data-ani-delay="0.2s">Belajar Online Lebih Terarah, </span>
-                            <span class="title2" data-ani="slideinup" data-ani-delay="0.4s">Fleksibel, dan </span>
-                            <span class="title3 text-theme2 fw-normal" data-ani="slideinup" data-ani-delay="0.6s">Mudah Dipantau</span>
-                        </h1>
-                        <p class="hero-text text-white" data-ani="slideinup" data-ani-delay="0.7s">
-                            Akses materi video, PDF, kuis, dan progres belajar dalam satu platform yang rapi untuk siswa dan pengelola kursus.
-                        </p>
-                        <div class="btn-wrap" data-ani="slideinup" data-ani-delay="0.8s">
-                            <a href="{{ $anchor('katalog') }}" class="th-btn style2">LIHAT KATALOG KURSUS
-                                <svg class="ms-2" width="16" height="14" viewBox="0 0 16 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7.5264 0C7.5264 0.6962 8.21633 1.738 8.9138 2.61293C9.81193 3.7394 10.8838 4.72347 12.1137 5.4748C13.0351 6.0374 14.154 6.57747 15.0528 6.57747M7.5264 13.1712C7.5264 12.475 8.21633 11.4332 8.9138 10.5583C9.81193 9.43187 10.8838 8.44773 12.1137 7.6964C13.0351 7.1338 14.154 6.59373 15.0528 6.59373M15.0528 6.5856H0" stroke="currentColor" stroke-width="1.5"></path></svg>
-                            </a>
-                            @guest
-                                <a href="{{ route('register') }}" class="nav-btn nav-btn-outline-light ms-2">DAFTAR GRATIS</a>
-                            @endguest
+    <div class="swiper th-slider hero-slider5" id="heroSlider5" data-slider-options='{"effect":"fade", "autoHeight": "true"}'>
+        <div class="swiper-wrapper">
+            @foreach ($heroSlides as $slide)
+                <div class="swiper-slide">
+                    <div class="hero-inner">
+                        <div class="th-hero-bg" data-mask-src="{{ asset('escul/assets/img/hero/hero_bg_mask5_1.png') }}">
+                            <div class="thumb">
+                                <img class="img-cover" src="{{ asset('escul/assets/img/hero/' . $slide['bg']) }}" alt="Suasana belajar online">
+                            </div>
                         </div>
+                        <div class="about-tag" data-ani="slideinup">
+                            <div class="about-experience-tag">
+                                <span class="circle-title-anime">{{ $slide['ring'] }}</span>
+                            </div>
+                        </div>
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-xl-9">
+                                    <div class="hero-style5">
+                                        <h1 class="hero-title text-white">
+                                            <span class="title1" data-ani="slideinup" data-ani-delay="0.2s">{{ $slide['title1'] }}</span>
+                                            <span class="title2" data-ani="slideinup" data-ani-delay="0.4s">{{ $slide['title2'] }}</span>
+                                            <span class="title3 text-theme2 fw-normal" data-ani="slideinup" data-ani-delay="0.6s">{{ $slide['title3'] }}</span>
+                                        </h1>
+                                        <p class="hero-text text-white" data-ani="slideinup" data-ani-delay="0.7s">
+                                            {{ $slide['text'] }}
+                                        </p>
+                                        <div class="btn-wrap" data-ani="slideinup" data-ani-delay="0.8s">
+                                            <a href="{{ $anchor('katalog') }}" class="th-btn style2">LIHAT KATALOG KURSUS
+                                                <svg class="ms-2" width="16" height="14" viewBox="0 0 16 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7.5264 0C7.5264 0.6962 8.21633 1.738 8.9138 2.61293C9.81193 3.7394 10.8838 4.72347 12.1137 5.4748C13.0351 6.0374 14.154 6.57747 15.0528 6.57747M7.5264 13.1712C7.5264 12.475 8.21633 11.4332 8.9138 10.5583C9.81193 9.43187 10.8838 8.44773 12.1137 7.6964C13.0351 7.1338 14.154 6.59373 15.0528 6.59373M15.0528 6.5856H0" stroke="currentColor" stroke-width="1.5"></path></svg>
+                                            </a>
+                                            @guest
+                                                <a href="{{ route('register') }}" class="nav-btn nav-btn-outline-light ms-2">DAFTAR GRATIS</a>
+                                            @endguest
+                                        </div>
 
-                        <div class="hero-stats-wrap mt-5 d-flex flex-wrap gap-4" data-ani="slideinup" data-ani-delay="0.9s">
-                            <div>
-                                <p class="text-white-50 small mb-1">Kursus Aktif</p>
-                                <p class="text-white fw-bold fs-3 mb-0">{{ number_format($stats['courses'], 0, ',', '.') }}+</p>
-                            </div>
-                            <div>
-                                <p class="text-white-50 small mb-1">Kategori</p>
-                                <p class="text-white fw-bold fs-3 mb-0">{{ $stats['categories'] }}</p>
-                            </div>
-                            <div>
-                                <p class="text-white-50 small mb-1">Pelajar Terdaftar</p>
-                                <p class="text-white fw-bold fs-3 mb-0">{{ number_format($stats['students'], 0, ',', '.') }}+</p>
+                                        <div class="hero-stats-wrap mt-5 d-flex flex-wrap gap-4" data-ani="slideinup" data-ani-delay="0.9s">
+                                            <div>
+                                                <p class="text-white-50 small mb-1">Kursus Aktif</p>
+                                                <p class="text-white fw-bold fs-3 mb-0">{{ number_format($stats['courses'], 0, ',', '.') }}+</p>
+                                            </div>
+                                            <div>
+                                                <p class="text-white-50 small mb-1">Kategori</p>
+                                                <p class="text-white fw-bold fs-3 mb-0">{{ $stats['categories'] }}</p>
+                                            </div>
+                                            <div>
+                                                <p class="text-white-50 small mb-1">Pelajar Terdaftar</p>
+                                                <p class="text-white fw-bold fs-3 mb-0">{{ number_format($stats['students'], 0, ',', '.') }}+</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            @endforeach
+        </div>
+        <div class="icon-box">
+            <button data-slider-prev="#heroSlider5" class="slider-arrow style8 slider-prev default">
+                <svg width="16" height="14" viewBox="0 0 16 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M7.52633 0C7.52633 0.6962 6.8364 1.738 6.13893 2.61293C5.2408 3.7394 4.16893 4.72347 2.939 5.4748C2.0176 6.0374 0.898735 6.57747 -6.52242e-05 6.57747M7.52633 13.1712C7.52633 12.475 6.8364 11.4332 6.13893 10.5583C5.2408 9.43187 4.16893 8.44773 2.939 7.6964C2.0176 7.1338 0.898735 6.59373 -6.52242e-05 6.59373M-6.52242e-05 6.5856H15.0527" stroke="currentColor" stroke-width="1.5" />
+                </svg>
+            </button>
+            <button data-slider-next="#heroSlider5" class="slider-arrow style8 slider-next default">
+                <svg width="16" height="14" viewBox="0 0 16 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7.5264 0C7.5264 0.6962 8.21633 1.738 8.9138 2.61293C9.81193 3.7394 10.8838 4.72347 12.1137 5.4748C13.0351 6.0374 14.154 6.57747 15.0528 6.57747M7.5264 13.1712C7.5264 12.475 8.21633 11.4332 8.9138 10.5583C9.81193 9.43187 10.8838 8.44773 12.1137 7.6964C13.0351 7.1338 14.154 6.59373 15.0528 6.59373M15.0528 6.5856H0" stroke="currentColor" stroke-width="1.5"></path></svg>
+            </button>
         </div>
     </div>
 </div>
@@ -71,6 +109,9 @@
                         <div class="thumb"><img class="img-cover" src="{{ asset('escul/assets/img/normal/about_5_2.jpg') }}" alt="Diskusi belajar kelompok"></div>
                     </div>
                     <div class="about-tag">
+                        <div class="about-experience-tag">
+                            <span class="circle-title-anime">Kepuasan Pelajar ** Kepuasan Pelajar **</span>
+                        </div>
                         <div class="year-counter">
                             <div class="box-title"><span class="counter-number">{{ $stats['categories'] }}</span></div>
                             <span class="small text-body">Kategori Kursus</span>
