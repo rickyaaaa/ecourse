@@ -52,6 +52,43 @@
     --color-surface: oklch(0.985 0.003 272);
 }
 
+/*
+ * Identitas visual Panel Admin — terpisah dari brand-* dan gold-* di atas
+ * (punya halaman publik/marketing). Palet biru + status semantik (sukses,
+ * galat, peringatan, info) dan radius yang lebih besar, dipakai di
+ * layouts/admin.blade.php dan resources/views/admin.
+ */
+@theme {
+    --font-admin: 'Lexend Deca', ui-sans-serif, system-ui, sans-serif;
+
+    --color-admin-primary: #165dff;
+    --color-admin-primary-hover: #0e4bd9;
+    --color-admin-foreground: #080c1a;
+    --color-admin-secondary: #6a7686;
+    --color-admin-muted: #eff2f7;
+    --color-admin-border: #e5e7eb;
+
+    --color-admin-success: #30b22d;
+    --color-admin-success-light: #dcfce7;
+    --color-admin-success-dark: #166534;
+
+    --color-admin-error: #ed6b60;
+    --color-admin-error-light: #fee2e2;
+    --color-admin-error-dark: #991b1b;
+
+    --color-admin-warning: #eab308;
+    --color-admin-warning-light: #fef9c3;
+    --color-admin-warning-dark: #854d0e;
+
+    --color-admin-info: #165dff;
+    --color-admin-info-light: #dbeafe;
+    --color-admin-info-dark: #1e40af;
+
+    --radius-admin-card: 20px;
+    --radius-admin-button: 50px;
+    --radius-admin-icon: 12px;
+}
+
 [x-cloak] {
     display: none !important;
 }

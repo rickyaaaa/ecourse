@@ -5,96 +5,132 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Panel Admin — Platform Kursus Online')</title>
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    @vite(['resources/css/app.css', 'resources/js/admin.js'])
 </head>
 <body
-    class="min-h-screen bg-gray-50 text-gray-900 antialiased"
+    class="min-h-screen bg-admin-muted font-admin text-admin-foreground antialiased"
     x-data="{ sidebarOpen: false }"
 >
-    <div class="flex min-h-screen">
-        {{-- Overlay mobile, klik untuk menutup sidebar --}}
-        <div
-            x-show="sidebarOpen"
-            x-cloak
-            @click="sidebarOpen = false"
-            class="fixed inset-0 z-30 bg-gray-900/50 lg:hidden"
-        ></div>
+    {{-- Overlay mobile --}}
+    <div
+        x-show="sidebarOpen"
+        x-cloak
+        @click="sidebarOpen = false"
+        class="fixed inset-0 z-40 bg-black/50 lg:hidden"
+    ></div>
 
+    <div class="flex min-h-screen">
         <aside
-            class="fixed inset-y-0 left-0 z-40 w-64 -translate-x-full transform border-r border-gray-200 bg-white transition-transform duration-200 ease-in-out lg:static lg:translate-x-0"
+            class="fixed inset-y-0 left-0 z-50 flex w-[280px] shrink-0 -translate-x-full transform flex-col overflow-hidden border-r border-admin-border bg-white transition-transform duration-300 lg:translate-x-0"
             :class="sidebarOpen && '!translate-x-0'"
         >
-            <div class="flex h-16 items-center justify-between border-b border-gray-200 px-6">
-                <a href="{{ route('admin.dashboard') }}" class="text-lg font-bold text-indigo-600">
-                    Panel Admin
+            <div class="flex h-[90px] shrink-0 items-center justify-between gap-3 border-b border-admin-border px-5">
+                <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-3">
+                    <span class="flex h-9 w-11 shrink-0 items-center justify-center rounded-xl bg-admin-primary">
+                        <i data-lucide="graduation-cap" class="h-5 w-5 text-white"></i>
+                    </span>
+                    <span class="text-lg font-semibold">Platform Kursus</span>
                 </a>
-                <button @click="sidebarOpen = false" class="text-gray-400 hover:text-gray-600 lg:hidden" aria-label="Tutup menu">
-                    ✕
+                <button
+                    @click="sidebarOpen = false"
+                    aria-label="Tutup menu"
+                    class="flex size-10 shrink-0 items-center justify-center rounded-xl ring-1 ring-admin-border hover:ring-admin-primary transition-all lg:hidden"
+                >
+                    <i data-lucide="x" class="size-5 text-admin-secondary"></i>
                 </button>
             </div>
 
-            <nav class="space-y-1 px-3 py-4 text-sm font-medium">
-                @php
-                    $adminNavItems = [
-                        ['route' => 'admin.dashboard', 'label' => 'Dasbor', 'icon' => '📊'],
-                        ['route' => 'admin.courses.index', 'label' => 'Kelola Kursus', 'icon' => '📚'],
-                        ['route' => 'admin.modules.index', 'label' => 'Kelola Materi', 'icon' => '🧩'],
-                        ['route' => 'admin.quizzes.index', 'label' => 'Kelola Kuis', 'icon' => '📝'],
-                        ['route' => 'admin.participants.index', 'label' => 'Kelola Peserta', 'icon' => '👥'],
-                    ];
-                @endphp
+            <nav class="flex flex-1 flex-col gap-6 overflow-y-auto p-5 pb-6">
+                <div class="flex flex-col gap-3">
+                    <h3 class="text-sm font-medium text-admin-secondary">Menu Utama</h3>
+                    <div class="flex flex-col gap-1">
+                        @php
+                            $adminNavItems = [
+                                ['route' => 'admin.dashboard', 'label' => 'Dasbor', 'icon' => 'layout-dashboard'],
+                                ['route' => 'admin.courses.index', 'label' => 'Kelola Kursus', 'icon' => 'book-open'],
+                                ['route' => 'admin.modules.index', 'label' => 'Kelola Materi', 'icon' => 'layers'],
+                                ['route' => 'admin.quizzes.index', 'label' => 'Kelola Kuis', 'icon' => 'clipboard-list'],
+                                ['route' => 'admin.participants.index', 'label' => 'Kelola Peserta', 'icon' => 'users'],
+                            ];
+                        @endphp
 
-                @foreach ($adminNavItems as $item)
-                    <a
-                        href="{{ route($item['route']) }}"
-                        class="flex items-center gap-3 rounded-md px-3 py-2 {{ request()->routeIs($item['route']) ? 'bg-indigo-50 text-indigo-700' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}"
-                    >
-                        <span aria-hidden="true">{{ $item['icon'] }}</span>
-                        {{ $item['label'] }}
+                        @foreach ($adminNavItems as $item)
+                            @php $isActive = request()->routeIs($item['route']); @endphp
+                            <a
+                                href="{{ route($item['route']) }}"
+                                class="flex items-center gap-3 rounded-xl p-3.5 text-sm font-medium transition-all {{ $isActive ? 'bg-admin-muted font-semibold text-admin-foreground' : 'text-admin-secondary hover:bg-admin-muted hover:text-admin-foreground' }}"
+                            >
+                                <i data-lucide="{{ $item['icon'] }}" class="size-5 shrink-0"></i>
+                                {{ $item['label'] }}
+                            </a>
+                        @endforeach
+                    </div>
+                </div>
+
+                <div class="mt-auto flex flex-col gap-1 border-t border-admin-border pt-5">
+                    <a href="{{ route('courses.index') }}" class="flex items-center gap-3 rounded-xl p-3.5 text-sm font-medium text-admin-secondary hover:bg-admin-muted hover:text-admin-foreground transition-all">
+                        <i data-lucide="arrow-left" class="size-5 shrink-0"></i>
+                        Kembali ke Situs
                     </a>
-                @endforeach
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <button type="submit" class="flex w-full items-center gap-3 rounded-xl p-3.5 text-left text-sm font-medium text-admin-secondary hover:bg-admin-error-light hover:text-admin-error-dark transition-all">
+                            <i data-lucide="log-out" class="size-5 shrink-0"></i>
+                            Keluar
+                        </button>
+                    </form>
+                </div>
             </nav>
-
-            <div class="absolute inset-x-0 bottom-0 border-t border-gray-200 p-3">
-                <a href="{{ route('courses.index') }}" class="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 hover:text-gray-900">
-                    <span aria-hidden="true">↩️</span>
-                    Kembali ke Situs
-                </a>
-                <form method="POST" action="{{ route('logout') }}" class="mt-1">
-                    @csrf
-                    <button type="submit" class="flex w-full items-center gap-3 rounded-md px-3 py-2 text-left text-sm font-medium text-gray-600 hover:bg-gray-50 hover:text-gray-900">
-                        <span aria-hidden="true">🚪</span>
-                        Keluar
-                    </button>
-                </form>
-            </div>
         </aside>
 
-        <div class="flex min-w-0 flex-1 flex-col">
-            <header class="flex h-16 items-center justify-between border-b border-gray-200 bg-white px-4 sm:px-6">
-                <button @click="sidebarOpen = true" class="text-gray-500 hover:text-gray-700 lg:hidden" aria-label="Buka menu">
-                    ☰
+        <div class="flex min-w-0 flex-1 flex-col lg:ml-[280px]">
+            <header class="flex h-[90px] shrink-0 items-center justify-between gap-3 border-b border-admin-border bg-white px-4 sm:px-6">
+                <button
+                    @click="sidebarOpen = true"
+                    aria-label="Buka menu"
+                    class="flex size-11 items-center justify-center rounded-xl ring-1 ring-admin-border hover:ring-admin-primary transition-all lg:hidden"
+                >
+                    <i data-lucide="menu" class="size-6 text-admin-foreground"></i>
                 </button>
-                <h1 class="text-base font-semibold text-gray-900">@yield('page-title', 'Panel Admin')</h1>
-                <span class="hidden text-sm text-gray-500 sm:inline">Hai, {{ auth()->user()->name }}</span>
+
+                <h1 class="text-lg font-bold text-admin-foreground sm:text-xl">@yield('page-title', 'Panel Admin')</h1>
+
+                <div class="flex items-center gap-3 border-l border-admin-border pl-3">
+                    <span class="flex size-10 shrink-0 items-center justify-center rounded-full bg-admin-primary text-sm font-semibold text-white">
+                        {{ Str::of(auth()->user()->name)->substr(0, 1)->upper() }}
+                    </span>
+                    <div class="hidden text-right sm:block">
+                        <p class="text-sm font-semibold text-admin-foreground">{{ auth()->user()->name }}</p>
+                        <p class="text-xs text-admin-secondary">Admin</p>
+                    </div>
+                </div>
             </header>
 
             @if (session('notice'))
-                <div class="mx-4 mt-4 rounded-md border border-indigo-200 bg-indigo-50 px-4 py-3 text-sm text-indigo-800 sm:mx-6">
+                <div class="mx-4 mt-4 flex items-center gap-2 rounded-xl border border-admin-success/30 bg-admin-success-light px-4 py-3 text-sm text-admin-success-dark sm:mx-6">
+                    <i data-lucide="check-circle-2" class="size-4 shrink-0"></i>
                     {{ session('notice') }}
                 </div>
             @endif
 
             @if (session('error'))
-                <div class="mx-4 mt-4 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800 sm:mx-6">
+                <div class="mx-4 mt-4 flex items-center gap-2 rounded-xl border border-admin-error/30 bg-admin-error-light px-4 py-3 text-sm text-admin-error-dark sm:mx-6">
+                    <i data-lucide="alert-circle" class="size-4 shrink-0"></i>
                     {{ session('error') }}
                 </div>
             @endif
 
-            <main class="flex-1 px-4 py-6 sm:px-6 sm:py-8">
+            <main class="flex-1 bg-admin-muted px-4 py-6 sm:px-6 sm:py-8">
                 @yield('content')
             </main>
         </div>
     </div>
+
+    @stack('scripts')
 </body>
 </html>
