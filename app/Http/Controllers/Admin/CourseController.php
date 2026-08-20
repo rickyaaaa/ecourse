@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Course;
+use App\Support\CoursePresentation;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -115,8 +116,8 @@ class CourseController extends Controller
             'slug' => $course->slug,
             'description' => (string) $course->description,
             'level' => $course->level,
-            'thumbnail_color' => 'from-indigo-500 to-purple-500',
-            'thumbnail_icon' => '📘',
+            'thumbnail_icon' => CoursePresentation::thumbnailIcon($course->category?->slug),
+            'thumbnail_badge' => CoursePresentation::badgeClass($course->category?->slug),
             'modules_count' => $course->modules_count,
             'lessons_count' => $course->lessons_count,
             'students_count' => $course->students_count,

@@ -65,6 +65,53 @@
         </button>
     </div>
 
+    @php
+        $totalParticipants = $participants->count();
+        $activeParticipantCount = $participants->where('is_active', true)->count();
+        $inactiveParticipantCount = $participants->where('is_active', false)->count();
+    @endphp
+    <div class="row gy-3 mb-24">
+        <div class="col-6 col-md-4">
+            <div class="card radius-8 border h-100 p-20">
+                <div class="d-flex align-items-center gap-3">
+                    <span class="w-40-px h-40-px flex-shrink-0 d-flex justify-content-center align-items-center radius-8 bg-primary-50 text-primary-600">
+                        <i class="ri-team-line"></i>
+                    </span>
+                    <div>
+                        <p class="text-secondary-light text-sm mb-0">Total Peserta</p>
+                        <h6 class="fw-bold mb-0">{{ $totalParticipants }}</h6>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-4">
+            <div class="card radius-8 border h-100 p-20">
+                <div class="d-flex align-items-center gap-3">
+                    <span class="w-40-px h-40-px flex-shrink-0 d-flex justify-content-center align-items-center radius-8 bg-success-focus text-success-main">
+                        <i class="ri-checkbox-circle-line"></i>
+                    </span>
+                    <div>
+                        <p class="text-secondary-light text-sm mb-0">Aktif</p>
+                        <h6 class="fw-bold mb-0">{{ $activeParticipantCount }}</h6>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-md-4">
+            <div class="card radius-8 border h-100 p-20">
+                <div class="d-flex align-items-center gap-3">
+                    <span class="w-40-px h-40-px flex-shrink-0 d-flex justify-content-center align-items-center radius-8 bg-neutral-200 text-neutral-600">
+                        <i class="ri-forbid-line"></i>
+                    </span>
+                    <div>
+                        <p class="text-secondary-light text-sm mb-0">Nonaktif</p>
+                        <h6 class="fw-bold mb-0">{{ $inactiveParticipantCount }}</h6>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="card radius-8 border">
         <div class="card-body p-24">
             <div class="row gy-3 mb-24">
@@ -100,15 +147,19 @@
                         <template x-for="participant in filteredParticipants" :key="participant.id">
                             <tr>
                                 <td>
-                                    <div class="d-flex align-items-center gap-2">
-                                        <span class="w-32-px h-32-px flex-shrink-0 d-flex justify-content-center align-items-center rounded-circle bg-primary-600 text-white fw-semibold text-sm" x-text="participant.name.charAt(0).toUpperCase()"></span>
-                                        <span class="fw-medium text-secondary-light" x-text="participant.name"></span>
+                                    <div class="d-flex align-items-center gap-3">
+                                        <span class="w-36-px h-36-px flex-shrink-0 d-flex justify-content-center align-items-center rounded-circle bg-primary-600 text-white fw-semibold text-sm" x-text="participant.name.charAt(0).toUpperCase()"></span>
+                                        <span class="fw-semibold text-primary-light" x-text="participant.name"></span>
                                     </div>
                                 </td>
                                 <td class="text-secondary-light" x-text="participant.email"></td>
                                 <td class="text-secondary-light" x-text="participant.joined_at"></td>
-                                <td class="text-secondary-light" x-text="participant.courses_enrolled"></td>
-                                <td class="text-secondary-light" x-text="participant.courses_completed"></td>
+                                <td class="text-secondary-light">
+                                    <span class="bg-neutral-100 px-12 py-2 radius-4 text-sm" x-text="participant.courses_enrolled"></span>
+                                </td>
+                                <td class="text-secondary-light">
+                                    <span class="bg-success-focus text-success-main px-12 py-2 radius-4 text-sm" x-text="participant.courses_completed"></span>
+                                </td>
                                 <td>
                                     <span
                                         class="border px-12 py-2 radius-4 fw-medium text-sm"
@@ -136,8 +187,9 @@
                         </template>
 
                         <tr x-show="filteredParticipants.length === 0" x-cloak>
-                            <td colspan="7" class="text-center text-secondary-light py-40">
-                                Tidak ada peserta yang cocok dengan pencarian atau filter kamu.
+                            <td colspan="7" class="text-center py-60">
+                                <i class="ri-user-search-line text-2xl text-neutral-300 d-block mb-8"></i>
+                                <p class="text-secondary-light mb-0">Tidak ada peserta yang cocok dengan pencarian atau filter kamu.</p>
                             </td>
                         </tr>
                     </tbody>

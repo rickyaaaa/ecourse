@@ -9,19 +9,29 @@
     <p class="text-secondary-light mb-0">Kelola modul dan pelajaran yang tampil di halaman detail kursus.</p>
 </div>
 
-<form method="GET" action="{{ route('admin.modules.index') }}" class="mb-24" style="max-width:360px;">
-    <label for="course" class="form-label fw-medium">Pilih Kursus</label>
-    <select id="course" name="course" x-data x-on:change="$el.form.requestSubmit()" class="form-select radius-8">
-        @foreach ($courses as $course)
-            <option value="{{ $course->id }}" @selected($selectedCourse && $selectedCourse->id === $course->id)>
-                {{ $course->title }}
-            </option>
-        @endforeach
-    </select>
-    <noscript>
-        <button type="submit" class="btn btn-primary-600 radius-8 mt-8 px-16 py-8">Tampilkan</button>
-    </noscript>
-</form>
+<div class="card radius-8 border mb-24">
+    <div class="card-body p-20">
+        <form method="GET" action="{{ route('admin.modules.index') }}" class="row g-3 align-items-end">
+            <div class="col-md-6 col-lg-4">
+                <label for="course" class="form-label fw-medium d-flex align-items-center gap-1">
+                    <i class="ri-book-open-line text-primary-600"></i> Pilih Kursus
+                </label>
+                <select id="course" name="course" x-data x-on:change="$el.form.requestSubmit()" class="form-select radius-8">
+                    @foreach ($courses as $course)
+                        <option value="{{ $course->id }}" @selected($selectedCourse && $selectedCourse->id === $course->id)>
+                            {{ $course->title }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+            <noscript>
+                <div class="col-auto">
+                    <button type="submit" class="btn btn-primary-600 radius-8 px-16 py-8">Tampilkan</button>
+                </div>
+            </noscript>
+        </form>
+    </div>
+</div>
 
 @if (! $selectedCourse)
     <div class="card radius-8 border">
@@ -123,36 +133,52 @@
         </div>
 
         <div class="d-flex flex-column gap-12">
-            <template x-for="module in modules" :key="module.id">
-                <div class="card radius-8 border">
-                    <div class="d-flex align-items-center justify-content-between px-16 py-12">
-                        <button type="button" @click="toggleExpand(module.id)" class="btn btn-link text-decoration-none d-flex flex-grow-1 align-items-center gap-2 text-start p-0">
-                            <i class="text-secondary-light" :class="expanded[module.id] ? 'ri-arrow-down-s-line' : 'ri-arrow-right-s-line'"></i>
-                            <span class="fw-medium text-secondary-light" x-text="module.title"></span>
-                            <span class="text-sm text-neutral-400" x-text="`(${module.lessons.length} pelajaran)`"></span>
+            <template x-for="(module, index) in modules" :key="module.id">
+                <div class="card radius-8 border" style="overflow:hidden;">
+                    <div class="d-flex align-items-center justify-content-between px-16 py-12 bg-neutral-50 flex-wrap gap-3">
+                        <button type="button" @click="toggleExpand(module.id)" class="btn btn-link text-decoration-none d-flex flex-grow-1 align-items-center gap-3 text-start p-0">
+                            <span class="w-32-px h-32-px flex-shrink-0 d-flex justify-content-center align-items-center radius-8 bg-primary-50 text-primary-600 fw-bold text-sm" x-text="index + 1"></span>
+                            <i class="text-secondary-light flex-shrink-0" :class="expanded[module.id] ? 'ri-arrow-down-s-line' : 'ri-arrow-right-s-line'"></i>
+                            <span class="fw-semibold text-primary-light" x-text="module.title"></span>
+                            <span class="bg-neutral-200 text-neutral-600 px-8 py-2 radius-4 text-sm flex-shrink-0" x-text="`${module.lessons.length} pelajaran`"></span>
                         </button>
-                        <div class="d-flex flex-shrink-0 align-items-center gap-3 text-sm">
-                            <button type="button" @click="openCreateLesson(module)" class="fw-medium text-primary-600 bg-transparent border-0">+ Pelajaran</button>
-                            <button type="button" @click="openEditModule(module)" class="fw-medium text-primary-600 bg-transparent border-0">Ubah</button>
-                            <button type="button" @click="deleteModule(module)" class="fw-medium text-danger-600 bg-transparent border-0">Hapus</button>
+                        <div class="d-flex flex-shrink-0 align-items-center gap-8">
+                            <button type="button" @click="openCreateLesson(module)" class="btn btn-sm btn-outline-primary-600 radius-8 d-flex align-items-center gap-1 px-12 py-6">
+                                <i class="ri-add-line"></i> Pelajaran
+                            </button>
+                            <button type="button" @click="openEditModule(module)" class="bg-success-focus bg-hover-success-200 text-success-600 fw-medium w-32-px h-32-px d-flex justify-content-center align-items-center rounded-circle" aria-label="Ubah modul">
+                                <i class="ri-edit-line"></i>
+                            </button>
+                            <button type="button" @click="deleteModule(module)" class="bg-danger-focus bg-hover-danger-200 text-danger-600 fw-medium w-32-px h-32-px d-flex justify-content-center align-items-center rounded-circle" aria-label="Hapus modul">
+                                <i class="ri-delete-bin-line"></i>
+                            </button>
                         </div>
                     </div>
 
-                    <div x-show="expanded[module.id]" x-cloak class="border-top">
+                    <div x-show="expanded[module.id]" x-cloak class="border-top" style="border-left:3px solid var(--primary-100);margin-left:16px;">
                         <template x-for="lesson in module.lessons" :key="lesson.id">
-                            <div class="d-flex align-items-center justify-content-between px-16 py-10 border-bottom text-sm" style="padding-left:48px !important;">
+                            <div class="d-flex align-items-center justify-content-between px-16 py-10 border-bottom flex-wrap gap-2" style="padding-left:24px !important;">
                                 <div class="d-flex align-items-center gap-2">
-                                    <i :class="lesson.type === 'video' ? 'ri-play-circle-line' : 'ri-file-text-line'" class="text-secondary-light"></i>
+                                    <i :class="lesson.type === 'video' ? 'ri-play-circle-line text-info-main' : 'ri-file-text-line text-neutral-400'"></i>
                                     <span class="text-secondary-light" x-text="lesson.title"></span>
+                                    <span
+                                        class="px-8 py-2 radius-4 text-sm fw-medium"
+                                        :class="lesson.type === 'video' ? 'bg-info-focus text-info-main' : 'bg-neutral-200 text-neutral-600'"
+                                        x-text="lesson.type === 'video' ? 'Video' : 'Teks'"
+                                    ></span>
                                 </div>
-                                <div class="d-flex align-items-center gap-3">
-                                    <button type="button" @click="openEditLesson(module, lesson)" class="fw-medium text-primary-600 bg-transparent border-0">Ubah</button>
-                                    <button type="button" @click="deleteLesson(module, lesson)" class="fw-medium text-danger-600 bg-transparent border-0">Hapus</button>
+                                <div class="d-flex align-items-center gap-8">
+                                    <button type="button" @click="openEditLesson(module, lesson)" class="bg-success-focus bg-hover-success-200 text-success-600 w-28-px h-28-px d-flex justify-content-center align-items-center rounded-circle" aria-label="Ubah pelajaran">
+                                        <i class="ri-edit-line text-sm"></i>
+                                    </button>
+                                    <button type="button" @click="deleteLesson(module, lesson)" class="bg-danger-focus bg-hover-danger-200 text-danger-600 w-28-px h-28-px d-flex justify-content-center align-items-center rounded-circle" aria-label="Hapus pelajaran">
+                                        <i class="ri-delete-bin-line text-sm"></i>
+                                    </button>
                                 </div>
                             </div>
                         </template>
 
-                        <p x-show="module.lessons.length === 0" x-cloak class="text-sm text-neutral-400 px-16 py-12 mb-0" style="padding-left:48px !important;">
+                        <p x-show="module.lessons.length === 0" x-cloak class="text-sm text-neutral-400 px-16 py-12 mb-0" style="padding-left:24px !important;">
                             Belum ada pelajaran di modul ini.
                         </p>
                     </div>
@@ -160,8 +186,9 @@
             </template>
 
             <div x-show="modules.length === 0" x-cloak class="card radius-8 border">
-                <div class="card-body text-center text-secondary-light py-40">
-                    Belum ada modul untuk kursus ini.
+                <div class="card-body text-center py-40">
+                    <i class="ri-stack-line text-2xl text-neutral-300 d-block mb-8"></i>
+                    <p class="text-secondary-light mb-0">Belum ada modul untuk kursus ini.</p>
                 </div>
             </div>
         </div>

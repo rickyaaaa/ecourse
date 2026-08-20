@@ -9,50 +9,62 @@
     <p class="text-secondary-light mb-0">Kelola kuis dan soal yang harus dijawab pelajar di akhir tiap modul.</p>
 </div>
 
-<form method="GET" action="{{ route('admin.quizzes.index') }}" class="row g-3 mb-24">
-    <div class="col-sm-6 col-md-4">
-        <label for="course" class="form-label fw-medium">Pilih Kursus</label>
-        <select id="course" name="course" x-data x-on:change="$el.form.requestSubmit()" class="form-select radius-8">
-            @foreach ($courses as $course)
-                <option value="{{ $course->id }}" @selected($selectedCourse && $selectedCourse->id === $course->id)>
-                    {{ $course->title }}
-                </option>
-            @endforeach
-        </select>
-    </div>
+<div class="card radius-8 border mb-24">
+    <div class="card-body p-20">
+        <form method="GET" action="{{ route('admin.quizzes.index') }}" class="row g-3">
+            <div class="col-sm-6 col-md-4">
+                <label for="course" class="form-label fw-medium d-flex align-items-center gap-1">
+                    <i class="ri-book-open-line text-primary-600"></i> Pilih Kursus
+                </label>
+                <select id="course" name="course" x-data x-on:change="$el.form.requestSubmit()" class="form-select radius-8">
+                    @foreach ($courses as $course)
+                        <option value="{{ $course->id }}" @selected($selectedCourse && $selectedCourse->id === $course->id)>
+                            {{ $course->title }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
 
-    <div class="col-sm-6 col-md-4">
-        <label for="module" class="form-label fw-medium">Pilih Modul</label>
-        <select id="module" name="module" x-data x-on:change="$el.form.requestSubmit()" class="form-select radius-8">
-            @foreach ($modules as $module)
-                <option value="{{ $module->id }}" @selected($selectedModule && $selectedModule->id === $module->id)>
-                    {{ $module->title }}
-                </option>
-            @endforeach
-        </select>
-    </div>
+            <div class="col-sm-6 col-md-4">
+                <label for="module" class="form-label fw-medium d-flex align-items-center gap-1">
+                    <i class="ri-stack-line text-primary-600"></i> Pilih Modul
+                </label>
+                <select id="module" name="module" x-data x-on:change="$el.form.requestSubmit()" class="form-select radius-8">
+                    @foreach ($modules as $module)
+                        <option value="{{ $module->id }}" @selected($selectedModule && $selectedModule->id === $module->id)>
+                            {{ $module->title }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
 
-    <noscript>
-        <div class="col-auto d-flex align-items-end">
-            <button type="submit" class="btn btn-primary-600 radius-8 px-16 py-8">Tampilkan</button>
-        </div>
-    </noscript>
-</form>
+            <noscript>
+                <div class="col-auto d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary-600 radius-8 px-16 py-8">Tampilkan</button>
+                </div>
+            </noscript>
+        </form>
+    </div>
+</div>
 
 @if (! $selectedModule)
     <div class="card radius-8 border">
-        <div class="card-body text-center text-secondary-light py-40">
-            Belum ada modul untuk kursus ini. Tambahkan modul dulu di halaman Kelola Materi.
+        <div class="card-body text-center py-40">
+            <i class="ri-stack-line text-2xl text-neutral-300 d-block mb-8"></i>
+            <p class="text-secondary-light mb-0">Belum ada modul untuk kursus ini. Tambahkan modul dulu di halaman Kelola Materi.</p>
         </div>
     </div>
 @elseif (! $quiz)
     <div class="card radius-8 border">
-        <div class="card-body text-center text-secondary-light py-40">
-            <p>Modul ini belum punya kuis.</p>
+        <div class="card-body text-center py-40">
+            <i class="ri-questionnaire-line text-2xl text-neutral-300 d-block mb-8"></i>
+            <p class="text-secondary-light mb-16">Modul ini belum punya kuis.</p>
             <form method="POST" action="{{ route('admin.quizzes.store') }}" class="d-inline-block">
                 @csrf
                 <input type="hidden" name="module_id" value="{{ $selectedModule->id }}">
-                <button type="submit" class="btn btn-primary-600 radius-8 px-16 py-8">Buat Kuis untuk Modul Ini</button>
+                <button type="submit" class="btn btn-primary-600 radius-8 d-flex align-items-center gap-1 px-16 py-8 mx-auto">
+                    <i class="ri-add-line"></i> Buat Kuis untuk Modul Ini
+                </button>
             </form>
         </div>
     </div>
@@ -146,18 +158,42 @@
     >
         <div class="card radius-8 border mb-24">
             <div class="card-body p-24">
-                <div class="d-flex flex-column flex-sm-row gap-4 align-items-sm-center justify-content-sm-between">
-                    <div>
-                        <p class="text-secondary-light mb-1">Judul Kuis</p>
-                        <p class="fw-medium mb-0">{{ $quiz->title }}</p>
+                <div class="d-flex flex-column flex-lg-row gap-4 align-items-lg-center justify-content-lg-between mb-20">
+                    <div class="d-flex align-items-center gap-3">
+                        <span class="w-48-px h-48-px flex-shrink-0 d-flex justify-content-center align-items-center radius-8 bg-primary-50 text-primary-600 text-lg">
+                            <i class="ri-questionnaire-line"></i>
+                        </span>
+                        <div>
+                            <h6 class="fw-bold mb-0">{{ $quiz->title }}</h6>
+                            <p class="text-secondary-light text-sm mb-0">
+                                {{ $selectedCourse->title }} <i class="ri-arrow-right-s-line"></i> {{ $selectedModule->title }}
+                            </p>
+                        </div>
                     </div>
-                    <div>
-                        <p class="text-secondary-light mb-1">Nilai Kelulusan</p>
-                        <p class="fw-medium mb-0">{{ $quiz->passing_score }}</p>
-                    </div>
-                    <button @click="openEditQuiz()" class="btn btn-outline-secondary radius-8 px-16 py-8 align-self-start">
-                        Ubah Pengaturan Kuis
+                    <button @click="openEditQuiz()" class="btn btn-outline-secondary radius-8 d-flex align-items-center gap-1 px-16 py-8 flex-shrink-0">
+                        <i class="ri-settings-3-line"></i> Ubah Pengaturan
                     </button>
+                </div>
+
+                <div class="row g-3">
+                    <div class="col-6 col-md-4">
+                        <div class="bg-neutral-50 radius-8 p-16 text-center">
+                            <p class="text-secondary-light text-sm mb-1">Jumlah Soal</p>
+                            <h6 class="fw-bold mb-0">{{ $quiz->questions->count() }}</h6>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-4">
+                        <div class="bg-neutral-50 radius-8 p-16 text-center">
+                            <p class="text-secondary-light text-sm mb-1">Nilai Kelulusan</p>
+                            <h6 class="fw-bold mb-0">{{ $quiz->passing_score }}</h6>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-4">
+                        <div class="bg-neutral-50 radius-8 p-16 text-center">
+                            <p class="text-secondary-light text-sm mb-1">Percobaan Peserta</p>
+                            <h6 class="fw-bold mb-0">{{ $quiz->attempts_count }}</h6>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -174,8 +210,11 @@
                 <div class="card radius-8 border">
                     <div class="card-body p-20">
                         <div class="d-flex align-items-start justify-content-between gap-3">
-                            <p class="fw-medium mb-0">{{ $index + 1 }}. {{ $question->question_text }}</p>
-                            <div class="d-flex flex-shrink-0 align-items-center gap-3 text-sm">
+                            <div class="d-flex align-items-start gap-3">
+                                <span class="w-28-px h-28-px flex-shrink-0 d-flex justify-content-center align-items-center radius-8 bg-primary-50 text-primary-600 fw-bold text-sm">{{ $index + 1 }}</span>
+                                <p class="fw-medium mb-0">{{ $question->question_text }}</p>
+                            </div>
+                            <div class="d-flex flex-shrink-0 align-items-center gap-8">
                                 <span class="bg-neutral-200 text-neutral-600 px-12 py-2 radius-4 fw-medium text-sm">
                                     {{ $question->score }} poin
                                 </span>
@@ -187,20 +226,22 @@
                                         'score' => $question->score,
                                         'options' => $question->options->map(fn ($o) => ['option_text' => $o->option_text, 'is_correct' => $o->is_correct])->all(),
                                     ]) }})"
-                                    class="fw-medium text-primary-600 bg-transparent border-0"
+                                    class="bg-success-focus bg-hover-success-200 text-success-600 fw-medium w-32-px h-32-px d-flex justify-content-center align-items-center rounded-circle"
+                                    aria-label="Ubah soal"
                                 >
-                                    Ubah
+                                    <i class="ri-edit-line"></i>
                                 </button>
                                 <button
                                     @click="deleteQuestion({{ Js::from(['id' => $question->id]) }})"
-                                    class="fw-medium text-danger-600 bg-transparent border-0"
+                                    class="bg-danger-focus bg-hover-danger-200 text-danger-600 fw-medium w-32-px h-32-px d-flex justify-content-center align-items-center rounded-circle"
+                                    aria-label="Hapus soal"
                                 >
-                                    Hapus
+                                    <i class="ri-delete-bin-line"></i>
                                 </button>
                             </div>
                         </div>
 
-                        <ul class="list-unstyled d-flex flex-column gap-6 mt-12 mb-0">
+                        <ul class="list-unstyled d-flex flex-column gap-6 mt-12 mb-0" style="padding-left:40px;">
                             @foreach ($question->options as $option)
                                 <li class="d-flex align-items-center gap-2 text-sm {{ $option->is_correct ? 'text-success-600 fw-medium' : 'text-secondary-light' }}">
                                     <i class="{{ $option->is_correct ? 'ri-checkbox-circle-fill' : 'ri-checkbox-blank-circle-line' }}"></i>
@@ -210,14 +251,15 @@
                         </ul>
 
                         @if ($question->explanation)
-                            <p class="text-sm text-neutral-400 mt-12 mb-0">Pembahasan: {{ $question->explanation }}</p>
+                            <p class="text-sm text-neutral-400 mt-12 mb-0" style="padding-left:40px;">Pembahasan: {{ $question->explanation }}</p>
                         @endif
                     </div>
                 </div>
             @empty
                 <div class="card radius-8 border">
-                    <div class="card-body text-center text-secondary-light py-40">
-                        Belum ada soal untuk kuis modul ini.
+                    <div class="card-body text-center py-40">
+                        <i class="ri-questionnaire-line text-2xl text-neutral-300 d-block mb-8"></i>
+                        <p class="text-secondary-light mb-0">Belum ada soal untuk kuis modul ini.</p>
                     </div>
                 </div>
             @endforelse

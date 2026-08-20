@@ -33,7 +33,7 @@ class QuizController extends Controller
         $selectedModule = $modules->firstWhere('id', $selectedModuleId) ?? $modules->first();
 
         $quiz = $selectedModule
-            ? Quiz::where('module_id', $selectedModule->id)->with('questions.options')->first()
+            ? Quiz::where('module_id', $selectedModule->id)->with('questions.options')->withCount('attempts')->first()
             : null;
 
         return view('admin.quizzes.index', [
