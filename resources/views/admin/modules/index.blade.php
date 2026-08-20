@@ -167,7 +167,7 @@
         </div>
 
         {{-- Modal tambah/ubah modul --}}
-        <div x-show="showModuleModal" x-cloak class="position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center p-16" style="z-index:1050;">
+        <div x-show="showModuleModal" x-cloak class="position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center p-16" style="display:none;z-index:1050;">
             <div @click="showModuleModal = false" class="position-fixed top-0 start-0 w-100 h-100 bg-dark" style="opacity:.5;"></div>
 
             <div class="position-relative bg-white radius-8 shadow w-100 p-24" style="max-width:480px;">
@@ -201,7 +201,7 @@
         </div>
 
         {{-- Modal tambah/ubah pelajaran --}}
-        <div x-show="showLessonModal" x-cloak class="position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center p-16" style="z-index:1050;">
+        <div x-show="showLessonModal" x-cloak class="position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center p-16" style="display:none;z-index:1050;">
             <div @click="showLessonModal = false" class="position-fixed top-0 start-0 w-100 h-100 bg-dark" style="opacity:.5;"></div>
 
             <div class="position-relative bg-white radius-8 shadow w-100 p-24" style="max-width:480px;max-height:90vh;overflow-y:auto;">

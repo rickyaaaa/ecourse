@@ -147,7 +147,7 @@
     </div>
 
     {{-- Modal tambah peserta --}}
-    <div x-show="showModal" x-cloak class="position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center p-16" style="z-index:1050;">
+    <div x-show="showModal" x-cloak class="position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center p-16" style="display:none;z-index:1050;">
         <div @click="showModal = false" class="position-fixed top-0 start-0 w-100 h-100 bg-dark" style="opacity:.5;"></div>
 
         <div class="position-relative bg-white radius-8 shadow w-100 p-24" style="max-width:480px;">
