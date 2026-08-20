@@ -63,7 +63,7 @@
     <div class="container">
         <div class="row gy-50 gx-80 align-items-center">
             <div class="col-xl-6 col-lg-10">
-                <div class="img-box5">
+                <div class="img-box5 th_fade_anim" data-fade-from="left">
                     <div class="img1">
                         <div class="thumb"><img class="img-cover" src="{{ asset('escul/assets/img/normal/about_5_1.jpg') }}" alt="Pelajar belajar online dengan laptop"></div>
                     </div>
@@ -81,19 +81,19 @@
             <div class="col-xl-6">
                 <div class="about-wrap5">
                     <div class="title-area mb-35">
-                        <span class="sub-title"><img src="{{ asset('escul/assets/img/icon/subtitle-icon1-6.svg') }}" alt="">Kenapa Platform Kursus</span>
-                        <h2 class="sec-title">Dibangun Supaya Kamu Benar-Benar Menyelesaikan Kursusmu</h2>
-                        <p>Bukan cuma kumpulan video — setiap kursus disusun jadi modul dan pelajaran berurutan, dilengkapi kuis untuk menguji pemahamanmu, dan progresmu selalu tersimpan agar mudah dilanjutkan.</p>
+                        <span class="sub-title th_fade_anim"><img src="{{ asset('escul/assets/img/icon/subtitle-icon1-6.svg') }}" alt="">Kenapa Platform Kursus</span>
+                        <h2 class="sec-title th_fade_anim" data-delay="0.15">Dibangun Supaya Kamu Benar-Benar Menyelesaikan Kursusmu</h2>
+                        <p class="th_fade_anim" data-delay="0.25">Bukan cuma kumpulan video — setiap kursus disusun jadi modul dan pelajaran berurutan, dilengkapi kuis untuk menguji pemahamanmu, dan progresmu selalu tersimpan agar mudah dilanjutkan.</p>
                     </div>
                     <div class="about-info-wrap">
-                        <div class="about-info-card">
+                        <div class="about-info-card th_fade_anim" data-delay="0.3">
                             <div class="box-icon"><img src="{{ asset('escul/assets/img/icon/about-card-icon5-1.svg') }}" alt="img"></div>
                             <div class="box-details">
                                 <h3 class="box-title">Silabus Terstruktur</h3>
                                 <p class="box-text">Modul & pelajaran berurutan</p>
                             </div>
                         </div>
-                        <div class="about-info-card">
+                        <div class="about-info-card th_fade_anim" data-delay="0.4">
                             <div class="box-icon"><img src="{{ asset('escul/assets/img/icon/about-card-icon5-2.svg') }}" alt="img"></div>
                             <div class="box-details">
                                 <h3 class="box-title">Progres Tersimpan</h3>
@@ -101,7 +101,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="btn-wrap mt-40">
+                    <div class="btn-wrap mt-40 th_fade_anim" data-delay="0.45">
                         <a href="{{ $anchor('katalog') }}" class="th-btn style4">JELAJAHI KURSUS
                             <svg class="ms-2" width="16" height="14" viewBox="0 0 16 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7.5264 0C7.5264 0.6962 8.21633 1.738 8.9138 2.61293C9.81193 3.7394 10.8838 4.72347 12.1137 5.4748C13.0351 6.0374 14.154 6.57747 15.0528 6.57747M7.5264 13.1712C7.5264 12.475 8.21633 11.4332 8.9138 10.5583C9.81193 9.43187 10.8838 8.44773 12.1137 7.6964C13.0351 7.1338 14.154 6.59373 15.0528 6.59373M15.0528 6.5856H0" stroke="currentColor" stroke-width="1.5"></path></svg>
                         </a>
@@ -152,7 +152,7 @@
 
         <div class="row gy-4">
             @foreach ($courses as $course)
-                <div class="col-md-6 col-lg-4 d-flex">
+                <div class="col-md-6 col-lg-4 d-flex th_fade_anim" data-delay="{{ 0.15 + 0.1 * ($loop->index % 3) }}">
                     <x-escul.course-card :course="$course" class="w-100" />
                 </div>
             @endforeach
@@ -191,7 +191,7 @@
                 ];
             @endphp
             @foreach ($steps as $step)
-                <div class="col-sm-6 col-lg-3">
+                <div class="col-sm-6 col-lg-3 th_fade_anim" data-delay="{{ 0.15 + 0.15 * $loop->index }}">
                     <div class="text-center px-3">
                         <span class="d-inline-flex align-items-center justify-content-center rounded-circle bg-theme text-white mb-3" style="width:64px;height:64px;font-size:22px;">
                             <i class="fal {{ $step['icon'] }}"></i>
@@ -211,22 +211,22 @@
         <div class="row gy-40 align-items-center">
             <div class="col-xl-6">
                 <div class="why-card-wrap5">
-                    <div class="why-card5">
+                    <div class="why-card5 th_fade_anim" data-delay="0.15">
                         <div class="box-icon"><i class="fal fa-chalkboard-user fs-2 text-theme"></i></div>
                         <h3 class="box-title">Instruktur <br>Berpengalaman</h3>
                         <p class="box-text">Materi disusun praktisi yang paham cara pemula belajar paling efektif.</p>
                     </div>
-                    <div class="why-card5">
+                    <div class="why-card5 th_fade_anim" data-delay="0.3">
                         <div class="box-icon"><i class="fal fa-clock fs-2 text-theme"></i></div>
                         <h3 class="box-title">Belajar Sesuai <br>Ritme</h3>
                         <p class="box-text">Tidak ada jadwal kaku — akses materi kapan pun kamu sempat.</p>
                     </div>
-                    <div class="why-card5">
+                    <div class="why-card5 th_fade_anim" data-delay="0.45">
                         <div class="box-icon"><i class="fal fa-list-check fs-2 text-theme"></i></div>
                         <h3 class="box-title">Kuis & <br>Pembahasan</h3>
                         <p class="box-text">Tiap modul ditutup kuis singkat lengkap pembahasan jawaban.</p>
                     </div>
-                    <div class="why-card5">
+                    <div class="why-card5 th_fade_anim" data-delay="0.6">
                         <div class="box-icon"><i class="fal fa-chart-line fs-2 text-theme"></i></div>
                         <h3 class="box-title">Progres yang <br>Jelas</h3>
                         <p class="box-text">Dasbor menunjukkan persis modul mana yang sudah selesai.</p>
@@ -236,11 +236,11 @@
             <div class="col-xl-6">
                 <div class="why-wrap5">
                     <div class="title-area mb-50">
-                        <span class="sub-title"><img src="{{ asset('escul/assets/img/icon/subtitle-icon1-6.svg') }}" alt="">Kenapa Belajar di Sini</span>
-                        <h2 class="sec-title">Empat Alasan Pelajar Kami Bertahan Sampai Lulus</h2>
-                        <p>Kami merancang setiap detail — dari cara materi disusun sampai bagaimana progresmu ditampilkan — supaya belajar online tidak terasa sepi atau membingungkan.</p>
+                        <span class="sub-title th_fade_anim"><img src="{{ asset('escul/assets/img/icon/subtitle-icon1-6.svg') }}" alt="">Kenapa Belajar di Sini</span>
+                        <h2 class="sec-title th_fade_anim" data-delay="0.15">Empat Alasan Pelajar Kami Bertahan Sampai Lulus</h2>
+                        <p class="th_fade_anim" data-delay="0.25">Kami merancang setiap detail — dari cara materi disusun sampai bagaimana progresmu ditampilkan — supaya belajar online tidak terasa sepi atau membingungkan.</p>
                     </div>
-                    <div class="btn-wrap">
+                    <div class="btn-wrap th_fade_anim" data-delay="0.35">
                         <a href="{{ $anchor('katalog') }}" class="th-btn">JELAJAHI KURSUS
                             <svg class="ms-2" width="16" height="14" viewBox="0 0 16 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7.5264 0C7.5264 0.6962 8.21633 1.738 8.9138 2.61293C9.81193 3.7394 10.8838 4.72347 12.1137 5.4748C13.0351 6.0374 14.154 6.57747 15.0528 6.57747M7.5264 13.1712C7.5264 12.475 8.21633 11.4332 8.9138 10.5583C9.81193 9.43187 10.8838 8.44773 12.1137 7.6964C13.0351 7.1338 14.154 6.59373 15.0528 6.59373M15.0528 6.5856H0" stroke="currentColor" stroke-width="1.5"></path></svg>
                         </a>
@@ -256,13 +256,13 @@
     <div class="container">
         <div class="row gy-40 justify-content-between align-items-center">
             <div class="col-xxl-6 col-xl-7 col-lg-7">
-                <div class="title-area mb-0 text-lg-start text-center">
+                <div class="title-area mb-0 text-lg-start text-center th_fade_anim">
                     <h2 class="sec-title text-white">Siap Mulai Belajar <span class="fw-normal text-theme2">Sesuatu yang Baru?</span></h2>
                     <p class="text-white mb-0 mt-30">Daftar gratis, jelajahi katalog kursus, dan mulai modul pertamamu hari ini juga.</p>
                 </div>
             </div>
             <div class="col-lg-auto">
-                <div class="btn-wrap justify-content-center">
+                <div class="btn-wrap justify-content-center th_fade_anim" data-delay="0.2">
                     @guest
                         <a href="{{ route('register') }}" class="th-btn style7">DAFTAR GRATIS
                             <svg class="ms-2" width="16" height="14" viewBox="0 0 16 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7.5264 0C7.5264 0.6962 8.21633 1.738 8.9138 2.61293C9.81193 3.7394 10.8838 4.72347 12.1137 5.4748C13.0351 6.0374 14.154 6.57747 15.0528 6.57747M7.5264 13.1712C7.5264 12.475 8.21633 11.4332 8.9138 10.5583C9.81193 9.43187 10.8838 8.44773 12.1137 7.6964C13.0351 7.1338 14.154 6.59373 15.0528 6.59373M15.0528 6.5856H0" stroke="currentColor" stroke-width="1.5"></path></svg>
