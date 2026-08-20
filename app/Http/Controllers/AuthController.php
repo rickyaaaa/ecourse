@@ -28,6 +28,12 @@ class AuthController extends Controller
      */
     public function login(Request $request): RedirectResponse
     {
+        // Email disamakan ke huruf kecil sebelum dicocokkan — kolom email di
+        // database dibandingkan case-sensitive, jadi tanpa ini pengguna yang
+        // emailnya ke-auto-capitalize keyboard HP saat mendaftar jadi tidak
+        // bisa login lagi walau kata sandinya benar (lihat User::email()).
+        $request->merge(['email' => Str::lower(trim((string) $request->input('email')))]);
+
         $credentials = $request->validate([
             'email' => ['required', 'string', 'email'],
             'password' => ['required', 'string'],
@@ -97,6 +103,11 @@ class AuthController extends Controller
      */
     public function register(Request $request): RedirectResponse
     {
+        // Normalisasi sebelum validasi juga, supaya aturan unique:users,email
+        // membandingkan huruf kecil vs huruf kecil (mencegah akun duplikat
+        // seperti "Ricky@Gmail.com" vs "ricky@gmail.com").
+        $request->merge(['email' => Str::lower(trim((string) $request->input('email')))]);
+
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
@@ -133,6 +144,8 @@ class AuthController extends Controller
      */
     public function sendResetLink(Request $request): RedirectResponse
     {
+        $request->merge(['email' => Str::lower(trim((string) $request->input('email')))]);
+
         $request->validate(['email' => ['required', 'string', 'email']]);
 
         $status = Password::sendResetLink($request->only('email'));
@@ -162,6 +175,8 @@ class AuthController extends Controller
      */
     public function resetPassword(Request $request): RedirectResponse
     {
+        $request->merge(['email' => Str::lower(trim((string) $request->input('email')))]);
+
         $request->validate([
             'token' => ['required'],
             'email' => ['required', 'string', 'email'],

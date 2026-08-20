@@ -41,6 +41,9 @@
             name="email"
             autofocus
             autocomplete="email"
+            autocapitalize="off"
+            autocorrect="off"
+            spellcheck="false"
             placeholder="nama@email.com"
             x-model="email"
             class="form-control"
