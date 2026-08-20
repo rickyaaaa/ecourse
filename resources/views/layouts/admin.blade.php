@@ -6,10 +6,10 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Panel Admin — Platform Kursus Online')</title>
 
-    <link rel="stylesheet" href="{{ asset('admin/assets/css/remixicon.css') }}">
-    <link rel="stylesheet" href="{{ asset('admin/assets/css/lib/bootstrap.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('admin/assets/css/lib/apexcharts.css') }}">
-    <link rel="stylesheet" href="{{ asset('admin/assets/css/style.css') }}">
+    <link rel="stylesheet" href="{{ asset('wowdash/assets/css/remixicon.css') }}">
+    <link rel="stylesheet" href="{{ asset('wowdash/assets/css/lib/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('wowdash/assets/css/lib/apexcharts.css') }}">
+    <link rel="stylesheet" href="{{ asset('wowdash/assets/css/style.css') }}">
 </head>
 <body>
     <aside class="sidebar">
@@ -158,10 +158,10 @@
         </footer>
     </main>
 
-    <script src="{{ asset('admin/assets/js/lib/jquery-3.7.1.min.js') }}"></script>
-    <script src="{{ asset('admin/assets/js/lib/bootstrap.bundle.min.js') }}"></script>
-    <script src="{{ asset('admin/assets/js/lib/apexcharts.min.js') }}"></script>
-    <script src="{{ asset('admin/assets/js/app.js') }}"></script>
+    <script src="{{ asset('wowdash/assets/js/lib/jquery-3.7.1.min.js') }}"></script>
+    <script src="{{ asset('wowdash/assets/js/lib/bootstrap.bundle.min.js') }}"></script>
+    <script src="{{ asset('wowdash/assets/js/lib/apexcharts.min.js') }}"></script>
+    <script src="{{ asset('wowdash/assets/js/app.js') }}"></script>
     {{--
         Alpine.js (via resources/js/app.js) dipertahankan sementara untuk
         halaman Kelola Kursus/Materi/Kuis/Peserta yang masih pakai x-data
