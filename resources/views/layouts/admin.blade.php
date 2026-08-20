@@ -10,6 +10,24 @@
     <link rel="stylesheet" href="{{ asset('wowdash/assets/css/lib/bootstrap.min.css') }}">
     <link rel="stylesheet" href="{{ asset('wowdash/assets/css/lib/apexcharts.css') }}">
     <link rel="stylesheet" href="{{ asset('wowdash/assets/css/style.css') }}">
+    <style>
+        /*
+         * Aturan ini dulu datang dari resources/css/app.css (Tailwind),
+         * tapi layout ini sudah tidak memuat app.css lagi sejak migrasi ke
+         * WowDash/Bootstrap. Tanpa ini, SETIAP elemen x-show="..." x-cloak
+         * (semua modal Tambah/Ubah di 4 halaman Kelola) tampil dulu secara
+         * default sebelum Alpine.js sempat jalan — modal kelihatan "nyangkut
+         * kebuka" pas halaman baru dimuat, tombol Batal-nya belum ke-bind
+         * jadi kelihatan tidak berfungsi, dan kalau form-nya sempat
+         * ke-submit di jendela waktu itu, field state Alpine (mis.
+         * activeModuleId) masih nilai default awal → request nyasar ke URL
+         * yang salah (404). Alpine sendiri yang menghapus atribut ini
+         * begitu sudah selesai inisialisasi komponennya.
+         */
+        [x-cloak] {
+            display: none !important;
+        }
+    </style>
 </head>
 <body>
     <aside class="sidebar">
