@@ -8,6 +8,7 @@ use App\Models\Enrollment;
 use App\Models\Lesson;
 use App\Models\LessonProgress;
 use App\Models\Module;
+use App\Models\QuizAttempt;
 use App\Support\CoursePresentation;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -157,6 +158,19 @@ class CourseController extends Controller
 
         abort_if(! $courseModel, Response::HTTP_NOT_FOUND);
 
+        $attemptedQuizModuleIds = [];
+
+        if ($request->user()) {
+            $attemptedQuizModuleIds = QuizAttempt::query()
+                ->where('user_id', $request->user()->id)
+                ->whereHas('quiz', fn ($query) => $query->where('course_id', $courseModel->id))
+                ->with('quiz:id,module_id')
+                ->get()
+                ->pluck('quiz.module_id')
+                ->unique()
+                ->all();
+        }
+
         $syllabus = $courseModel->modules()
             ->with('lessons')
             ->get()
@@ -174,6 +188,7 @@ class CourseController extends Controller
         return view('courses.show', [
             'course' => $this->presentCourse($courseModel),
             'syllabus' => $syllabus,
+            'attemptedQuizModuleIds' => $attemptedQuizModuleIds,
         ]);
     }
 }

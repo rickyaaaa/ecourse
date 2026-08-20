@@ -6,6 +6,8 @@ use App\Models\Course;
 use App\Models\Lesson;
 use App\Models\LessonProgress;
 use App\Models\Module;
+use App\Models\Quiz;
+use App\Models\QuizAttempt;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -32,6 +34,7 @@ class LessonController extends Controller
 
         $user = $request->user();
         $completedLessonIds = [];
+        $attemptedQuizModuleIds = [];
 
         if ($user) {
             $completedLessonIds = LessonProgress::query()
@@ -41,6 +44,18 @@ class LessonController extends Controller
                 ->pluck('lesson_id')
                 ->all();
 
+            // Modul mana saja yang kuisnya sudah pernah dikerjakan user ini
+            // (dipakai buat centang "Kerjakan Kuis Modul" di sidebar/silabus,
+            // sama seperti centang pelajaran selesai).
+            $attemptedQuizModuleIds = QuizAttempt::query()
+                ->where('user_id', $user->id)
+                ->whereHas('quiz', fn ($query) => $query->whereIn('module_id', $courseModel->modules->pluck('id')))
+                ->with('quiz:id,module_id')
+                ->get()
+                ->pluck('quiz.module_id')
+                ->unique()
+                ->all();
+
             // Catat kapan terakhir kali pelajaran ini diakses.
             LessonProgress::updateOrCreate(
                 ['user_id' => $user->id, 'lesson_id' => $lessonModel->id],
@@ -48,14 +63,24 @@ class LessonController extends Controller
             );
         }
 
+        // "Berikutnya": kalau ini pelajaran TERAKHIR di modulnya dan modul
+        // itu punya kuis, arahkan ke kuis modul dulu — jangan langsung
+        // lompat ke pelajaran pertama modul berikutnya.
+        $isLastLessonInModule = $moduleModel->lessons->last()?->id === $lessonModel->id;
+        $moduleQuiz = $isLastLessonInModule
+            ? Quiz::where('module_id', $moduleModel->id)->first()
+            : null;
+
         return view('lessons.show', [
             'course' => $courseModel,
             'module' => $moduleModel,
             'lesson' => $lessonModel,
             'modules' => $courseModel->modules,
             'previousLesson' => $currentIndex > 0 ? $flatLessons[$currentIndex - 1] : null,
-            'nextLesson' => $currentIndex < $flatLessons->count() - 1 ? $flatLessons[$currentIndex + 1] : null,
+            'nextLesson' => $moduleQuiz ? null : ($currentIndex < $flatLessons->count() - 1 ? $flatLessons[$currentIndex + 1] : null),
+            'nextQuiz' => $moduleQuiz,
             'completedLessonIds' => $completedLessonIds,
+            'attemptedQuizModuleIds' => $attemptedQuizModuleIds,
             'isCompleted' => in_array($lessonModel->id, $completedLessonIds, true),
         ]);
     }

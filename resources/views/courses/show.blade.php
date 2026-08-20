@@ -121,6 +121,9 @@
                                                                 <a href="{{ route('quizzes.show', [$course['slug'], $module['id']]) }}" class="text-inherit d-flex align-items-center gap-2 fw-semibold" style="color:var(--theme-color2);">
                                                                     <i class="fal fa-clipboard-check"></i>
                                                                     Kerjakan Kuis Modul Ini
+                                                                    @if (in_array($module['id'], $attemptedQuizModuleIds, true))
+                                                                        <i class="fal fa-circle-check text-success ms-auto"></i>
+                                                                    @endif
                                                                 </a>
                                                             </li>
                                                         </ul>

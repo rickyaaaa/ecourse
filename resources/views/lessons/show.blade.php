@@ -65,9 +65,13 @@
                             @endif
                         </a>
                     @endforeach
+                    @php $quizAttempted = in_array($syllabusModule->id, $attemptedQuizModuleIds, true); @endphp
                     <a href="{{ route('quizzes.show', [$course->slug, $syllabusModule->id]) }}" class="lesson-sidebar-link" style="color:var(--theme-color2);">
                         <i class="fal fa-clipboard-check"></i>
-                        <span class="text-truncate">Kerjakan Kuis Modul</span>
+                        <span class="text-truncate flex-grow-1">Kerjakan Kuis Modul</span>
+                        @if ($quizAttempted)
+                            <i class="fal fa-circle-check lesson-sidebar-check"></i>
+                        @endif
                     </a>
                 </div>
             @endforeach
@@ -125,7 +129,11 @@
                     <span></span>
                 @endif
 
-                @if ($nextLesson)
+                @if ($nextQuiz)
+                    <a href="{{ route('quizzes.show', [$course->slug, $module->id]) }}" class="th-btn btn-sm">
+                        Kerjakan Kuis Modul<i class="fal fa-arrow-right ms-2"></i>
+                    </a>
+                @elseif ($nextLesson)
                     <a href="{{ route('lessons.show', [$course->slug, $nextLesson->id]) }}" class="th-btn btn-sm">
                         Berikutnya<i class="fal fa-arrow-right ms-2"></i>
                     </a>
